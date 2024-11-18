@@ -6,6 +6,7 @@ import App from './App';
 import ChatPage from './page/main/chat/Chat';
 import HomePage from './page/main/home/Home';
 import MyPage from './page/main/mypage/Mypage';
+import BtnTest from './page/index/BtnTest';
 
 const Router = () => {
   return (
@@ -16,6 +17,7 @@ const Router = () => {
             <Route path="home" element={<HomePage />} />   
             <Route path="chat" element={<ChatPage />} />
             <Route path="mypage" element={<MyPage />} />
+            <Route path="btnTest" element={<BtnTest />} />
           </Route>
         </Routes>
       </Suspense>
