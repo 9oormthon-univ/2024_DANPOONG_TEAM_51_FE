@@ -44,6 +44,7 @@ declare module 'styled-components' {
       body_large: SerializedStyles;
       body_medium: SerializedStyles;
       body_small: SerializedStyles;
+      chatting_medium: SerializedStyles;
     };
   }
 }
