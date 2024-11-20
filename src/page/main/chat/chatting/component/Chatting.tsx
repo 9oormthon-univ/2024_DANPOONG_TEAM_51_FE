@@ -12,12 +12,6 @@ interface ChattingProps {
   messages: MessageData[];
 }
 
-// 임시 멘토 프로필
-const OtherUserProfile = {
-  name: '권정',
-  profileImg: `url(${profileImage})`,
-};
-
 const Chatting = ({ messages }: ChattingProps) => {
   const renderMessages = () => {
     let lastDate = '';
