@@ -34,7 +34,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-        <St.AppWrapper>
+        <St.AppWrapper $isTabBar={!hiddenPaths.includes(pathname)}>
           <Outlet />
         </St.AppWrapper>
         {!hiddenPaths.includes(pathname) && (
@@ -63,10 +63,12 @@ const St = {
     align-items: stretch;
   `,
 
-  AppWrapper: styled.div`
+  AppWrapper: styled.div<{$isTabBar: boolean;}>`
     max-width: var(--app-max-width);
     width: 100%;
-    height: 100vh;
+    height: ${props => props.$isTabBar ?
+      `calc(100vh - 95px)` : `100vh`
+    };
 
     position: absolute;
     transform: translateX(-50%);
