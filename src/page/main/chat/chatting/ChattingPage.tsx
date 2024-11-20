@@ -3,9 +3,9 @@ import styled from 'styled-components';
 
 import Navigation from '@page/component/navi/Navigation';
 import Chatting from './component/Chatting';
+import MentoringStart from '@main/chat/chatting/component/MentoringStart';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import background from '@image/chatting/bg-gradient.png';
-import MentoringStart from './component/MentoringStart';
 
 interface MessageData {
   text: string;
@@ -16,8 +16,10 @@ interface MessageData {
 
 const ChattingPage = () => {
   const [messages, setMessages] = React.useState<MessageData[]>([]);
+  const [showMentoringStart, setShowMentoringStart] = React.useState(true);
 
   const handleSendMessage = (text: string) => {
+    setShowMentoringStart(false);
     setMessages([
       ...messages,
       {
@@ -36,7 +38,7 @@ const ChattingPage = () => {
           text: '나도 몰라몰라 나도 몰라',
           sender: 'other',
           time: '오전 11:45',
-          date: '2024-11-19',
+          date: '2024-11-20',
         },
       ]);
     }, 1000);
@@ -50,7 +52,7 @@ const ChattingPage = () => {
         label='멘토'
         onBackClick={() => console.log('뒤로가기')}
       />
-      <MentoringStart />
+      {showMentoringStart && <MentoringStart />}
       <St.ChattingWrapper>
         <Chatting messages={messages} />
       </St.ChattingWrapper>
