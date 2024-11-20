@@ -7,7 +7,7 @@ import { useLocation, Outlet } from 'react-router-dom';
 
 import TabBar from './page/main/component/TabBar';
 
-const hiddenPaths = ['/login', '/chatting/example']; // 예시 path
+const hiddenPaths = ['/index', '/login', '/signup', '/chatting/example']; // 예시 path
 
 function App() {
   const { pathname } = useLocation();
@@ -34,7 +34,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-        <Outlet />
+        <St.AppWrapper $isTabBar={!hiddenPaths.includes(pathname)}>
+          <Outlet />
+        </St.AppWrapper>
         {!hiddenPaths.includes(pathname) && (
           <St.TabBarWrapper>
             <TabBar />
@@ -59,5 +61,19 @@ const St = {
     left: 50%;
     transform: translateX(-50%);
     align-items: stretch;
+  `,
+
+  AppWrapper: styled.div<{$isTabBar: boolean;}>`
+    max-width: var(--app-max-width);
+    width: 100%;
+    height: ${props => props.$isTabBar ?
+      `calc(100vh - 95px)` : `100vh`
+    };
+
+    position: absolute;
+    transform: translateX(-50%);
+    overflow-y: auto;
+
+    background-image: url('/bg-gradient.png');
   `,
 }
