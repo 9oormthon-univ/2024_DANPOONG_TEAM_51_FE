@@ -1,5 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+
+import MentoringStart from '@main/chat/chatting/component/MentoringStart';
 
 interface MessageData {
   text: string;
@@ -26,7 +28,6 @@ const Chatting = ({ messages }: ChattingProps) => {
     let lastDate = '';
 
     return messages.map((message, index) => {
-      console.log('message.date:', message.date);
       const isNewDate = message.date !== lastDate;
       if (isNewDate) lastDate = message.date;
 
@@ -46,7 +47,12 @@ const Chatting = ({ messages }: ChattingProps) => {
     });
   };
 
-  return <ListWrapper ref={listRef}>{renderMessages()}</ListWrapper>;
+  return (
+    <ListWrapper ref={listRef}>
+      <MentoringStart />
+      {renderMessages()}
+    </ListWrapper>
+  );
 };
 
 // 날짜 형식 변환 함수
@@ -55,7 +61,7 @@ const formatDate = (date: string) => {
     return ''; // 날짜가 잘못된 경우
   }
 
-  const today = new Date().toISOString().split('T')[0]; // 오늘의 날짜
+  const today = new Date().toISOString().split('T')[0];
   const dayOfWeek = [
     '일요일',
     '월요일',

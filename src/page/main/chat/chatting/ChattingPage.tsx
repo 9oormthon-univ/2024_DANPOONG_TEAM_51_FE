@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import Navigation from '@page/component/navi/Navigation';
 import Chatting from './component/Chatting';
-import MentoringStart from '@main/chat/chatting/component/MentoringStart';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import background from '@image/chatting/bg-gradient.png';
 
@@ -16,10 +15,8 @@ interface MessageData {
 
 const ChattingPage = () => {
   const [messages, setMessages] = React.useState<MessageData[]>([]);
-  const [showMentoringStart, setShowMentoringStart] = React.useState(true);
 
   const handleSendMessage = (text: string) => {
-    setShowMentoringStart(false);
     setMessages([
       ...messages,
       {
@@ -52,7 +49,6 @@ const ChattingPage = () => {
         label='멘토'
         onBackClick={() => console.log('뒤로가기')}
       />
-      {showMentoringStart && <MentoringStart />}
       <St.ChattingWrapper>
         <Chatting messages={messages} />
       </St.ChattingWrapper>
