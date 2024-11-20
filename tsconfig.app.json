@@ -9,7 +9,7 @@
     "baseUrl": "./",
     "paths": {
       "@components/*": ["src/page/components/*"],
-      "@pages/*": ["src/pages/*"],
+      "@page/*": ["src/page/*"],
       "@shared/*": ["src/shared/*"],
       "@image/*": ["src/common/asset/image/*"],
       "@main/*": ["src/page/main/*"]
@@ -37,7 +37,7 @@
     "next.config.js",
     "custom.d.ts",
     "styles",
-    "pages",
+    "page",
     "public"
   ]
 }
