@@ -5,6 +5,7 @@ import AlbumButton from '@image/chatting/imageIcon.svg?react';
 import FileButton from '@image/chatting/fileIcon.svg?react';
 import CalendarButton from '@image/chatting/calendarIcon.svg?react';
 import SendButton from '@image/chatting/sendButton.svg?react';
+import ActivationSendButton from '@image/chatting/activationSendButton.svg?react';
 
 interface ChattingMessageInputProps {
   onSendMessage: (message: string) => void;
@@ -13,7 +14,7 @@ interface ChattingMessageInputProps {
 const ChattingMessageInput = ({ onSendMessage }: ChattingMessageInputProps) => {
   const [message, setMessage] = useState('');
 
-  const handleSend = () => {
+  const handleMessageSend = () => {
     if (message.trim()) {
       onSendMessage(message);
       setMessage('');
@@ -33,7 +34,16 @@ const ChattingMessageInput = ({ onSendMessage }: ChattingMessageInputProps) => {
         onChange={(e) => setMessage(e.target.value)}
         placeholder='메시지를 입력하세요'
       />
-      <SendButton onClick={handleSend} />
+      {/* 텍스트 유무에 따라 버튼 이미지를 변경 */}
+      {message.trim() ? (
+        <St.SendButtonWrapper onClick={handleMessageSend}>
+          <ActivationSendButton />
+        </St.SendButtonWrapper>
+      ) : (
+        <St.SendButtonWrapper>
+          <SendButton />
+        </St.SendButtonWrapper>
+      )}
     </St.InputWrapper>
   );
 };
@@ -80,6 +90,8 @@ const St = {
     border: none;
     border-radius: 20px;
     cursor: pointer;
+    background: none;
+    padding: 0;
   `,
 };
 
