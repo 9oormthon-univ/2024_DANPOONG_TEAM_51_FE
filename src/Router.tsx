@@ -9,7 +9,7 @@ import MyPage from './page/main/mypage/Mypage';
 import Index from './page/index/Index';
 import SignUp from './page/index/SignUp';
 
-import BtnTest from './page/component/button/BtnTest';
+import ComponentsTest from './page/component/ComponetsTest';
 
 const Router = () => {
   return (
@@ -23,7 +23,7 @@ const Router = () => {
             <Route path="index" element={<Index />} />
             <Route path="signup" element={<SignUp />} />
 
-            <Route path="btnTest" element={<BtnTest />} />
+            <Route path="components-test" element={<ComponentsTest />} />
           </Route>
         </Routes>
       </Suspense>
