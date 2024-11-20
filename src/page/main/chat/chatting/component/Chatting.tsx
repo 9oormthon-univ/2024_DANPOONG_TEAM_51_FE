@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import profileImage from '@image/chatting/userProfile.svg';
 
 interface MessageData {
   text: string;
