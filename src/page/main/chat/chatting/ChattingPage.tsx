@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import Navigation from '@page/component/navi/Navigation';
 import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import background from '@image/chatting/bg-gradient.png';
@@ -43,6 +44,12 @@ const ChattingPage = () => {
 
   return (
     <St.ChattingPageWrapper>
+      <Navigation
+        userName='김성은'
+        showBackButton
+        label='멘토'
+        onBackClick={() => console.log('뒤로가기')}
+      />
       <MentoringStart />
       <St.ChattingWrapper>
         <Chatting messages={messages} />
