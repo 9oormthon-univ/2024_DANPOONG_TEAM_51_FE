@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 
 interface MessageData {
@@ -12,16 +13,26 @@ interface ChattingProps {
 }
 
 const Chatting = ({ messages }: ChattingProps) => {
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  // 스크롤 설정
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const renderMessages = () => {
     let lastDate = '';
 
     return messages.map((message, index) => {
-      const showDateLabel = message.date !== lastDate;
-      lastDate = message.date;
+      console.log('message.date:', message.date);
+      const isNewDate = message.date !== lastDate;
+      if (isNewDate) lastDate = message.date;
 
       return (
         <div key={index}>
-          {showDateLabel && <DateLabel>{formatDate(message.date)}</DateLabel>}
+          {isNewDate && <DateLabel>{formatDate(message.date)}</DateLabel>}
           <MessageContainer $isUser={message.sender === 'user'}>
             <MessageWrapper $isUser={message.sender === 'user'}>
               {message.text}
@@ -35,12 +46,16 @@ const Chatting = ({ messages }: ChattingProps) => {
     });
   };
 
-  return <ListWrapper>{renderMessages()}</ListWrapper>;
+  return <ListWrapper ref={listRef}>{renderMessages()}</ListWrapper>;
 };
 
 // 날짜 형식 변환 함수
 const formatDate = (date: string) => {
-  const today = new Date().toISOString().split('T')[0];
+  if (!date || isNaN(new Date(date).getTime())) {
+    return ''; // 날짜가 잘못된 경우
+  }
+
+  const today = new Date().toISOString().split('T')[0]; // 오늘의 날짜
   const dayOfWeek = [
     '일요일',
     '월요일',
