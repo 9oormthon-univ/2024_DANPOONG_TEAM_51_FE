@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import background from '@image/chatting/bg-gradient.png';
+import MentoringStart from './component/MentoringStart';
 
 interface MessageData {
   text: string;
@@ -42,6 +43,7 @@ const ChattingPage = () => {
 
   return (
     <St.ChattingPageWrapper>
+      <MentoringStart />
       <St.ChattingWrapper>
         <Chatting messages={messages} />
       </St.ChattingWrapper>

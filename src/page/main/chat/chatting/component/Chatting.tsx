@@ -68,7 +68,7 @@ const formatDate = (date: string) => {
 
 const ListWrapper = styled.div`
   width: 393px;
-  padding: 16px;
+  padding: 0px 16px 16px 16px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
