@@ -7,9 +7,11 @@ import Profile from "@component/Profile";
 import BtnGroupVoiceCall from "./component/BtnGroupVoiceCall";
 import Loader from "./component/Loader";
 import ProfileWrapper from "./component/ProfileWrapper";
+import { useNavigate } from "react-router-dom";
 
 const VoiceCall = () => {
-  const [callState, setCallState] = useState<"before"|"going"|"after">("before");
+  const navigate = useNavigate();
+  const [callState, setCallState] = useState<"before"|"going"|"after"|"error">("before");
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeakerphoneOn, setIsSpeakerphoneOn] = useState(false)
   const [isMicOn, setIsMicOn] = useState(true)
@@ -45,7 +47,13 @@ const VoiceCall = () => {
             }
           { !isConnected && <Loader/> }
         </St.Info>}
-        {callState==="after" && <></>}
+        {callState==="after" && <>
+          <St.Heading>멘토링이 종료되었어요</St.Heading>
+          <St.Info><TimeCounter secondsPassed={601}/></St.Info>
+          </>}
+        {callState==="error" && <St.Heading>
+          전화 연결에 실패하였어요
+          </St.Heading>}
       </St.InfoWrapper>
 
       {/* 하단 버튼부 */}
@@ -66,9 +74,9 @@ const VoiceCall = () => {
           onMicToggle={handleMicToggle}
           onEndCallClick={handleEndCallClick}
         />}
-      {callState==="after" && <Button
+      { (callState==="after" || callState==="error") && <Button
           style={{isolation:"isolate",}}
-          onClick={()=>{setCallState("before")}}>
+          onClick={()=>{navigate("/home")}}>
             홈으로 가기
         </Button>}
     </St.Wrapper>
