@@ -11,10 +11,11 @@ export const VoiceCallStyle = {
       height: 100%;
       margin: 0 auto;
       padding: 15vh 2rem 5.6rem 2rem;
+      
+      color: ${props => props.theme.colors.gray700};
     `,
   Heading: styled.h1`
       ${({ theme }) => theme.fonts.title_extralarge}
-      color: ${props => props.theme.colors.gray700};
       text-align: center;
     `,
 }
