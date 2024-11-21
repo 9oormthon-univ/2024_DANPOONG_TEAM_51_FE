@@ -86,7 +86,13 @@ const fonts = {
     font-weight: 400;
     line-height: 16px;
   `,
-}
+  chatting_medium: css`
+    font-family: 'Pretendard';
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 16px;
+  `,
+};
 
 const theme: DefaultTheme = { colors, fonts };
 export default theme;

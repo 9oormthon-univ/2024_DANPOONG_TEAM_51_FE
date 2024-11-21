@@ -17,9 +17,14 @@ function App() {
     document.documentElement.style.setProperty('--vh', `${vh}px`);
 
     const windowWidth =
-      window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      window.innerWidth ||
+      document.documentElement.clientWidth ||
+      document.body.clientWidth;
     const maxWidth = Math.min(393, windowWidth);
-    document.documentElement.style.setProperty('--app-max-width', `${maxWidth}px`);
+    document.documentElement.style.setProperty(
+      '--app-max-width',
+      `${maxWidth}px`
+    );
   };
 
   useEffect(() => {
@@ -34,14 +39,14 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
-        <St.AppWrapper $isTabBar={!hiddenPaths.includes(pathname)}>
-          <Outlet />
-        </St.AppWrapper>
-        {!hiddenPaths.includes(pathname) && (
-          <St.TabBarWrapper>
-            <TabBar />
-          </St.TabBarWrapper>
-        )} 
+      <St.AppWrapper $isTabBar={!hiddenPaths.includes(pathname)}>
+        <Outlet />
+      </St.AppWrapper>
+      {!hiddenPaths.includes(pathname) && (
+        <St.TabBarWrapper>
+          <TabBar />
+        </St.TabBarWrapper>
+      )}
     </ThemeProvider>
   );
 }
@@ -54,7 +59,7 @@ const St = {
     overflow: hidden;
     z-index: 1000;
     width: 100%;
-    max-width: var(--app-max-width); 
+    max-width: var(--app-max-width);
     height: 95px;
     position: fixed;
     bottom: 0;
@@ -63,17 +68,18 @@ const St = {
     align-items: stretch;
   `,
 
-  AppWrapper: styled.div<{$isTabBar: boolean;}>`
+  AppWrapper: styled.div<{ $isTabBar: boolean }>`
     max-width: var(--app-max-width);
     width: 100%;
-    height: ${props => props.$isTabBar ?
-      `calc(100vh - 95px)` : `100vh`
-    };
+    height: ${(props) => (props.$isTabBar ? `calc(100vh - 95px)` : `100vh`)};
 
     position: absolute;
     transform: translateX(-50%);
     overflow-y: auto;
 
     background-image: url('/bg-gradient.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
   `,
-}
+};
