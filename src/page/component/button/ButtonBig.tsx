@@ -5,7 +5,7 @@ import { ComponentProps } from "react";
 export interface ButtonBigProps extends ComponentProps<"button"> {
   variant?: "default" | "special" | "storke";
   rightIcon?: boolean;
-  leftIcon?: React.ReactNode;
+  leftIcon?: React.FunctionComponent<React.ComponentProps<"svg">>;
   selected?: boolean;
   subtitle?: string;
   children: React.ReactNode;
@@ -20,7 +20,7 @@ const ButtonBig = ({
   return(
     <St.ButtonBig rightIcon>
       <St.LeftWrapper>
-        {props.leftIcon && props.leftIcon}
+        {props.leftIcon && <props.leftIcon/>}
         <St.Titles>
           {props.children}
           {props.subtitle &&
@@ -46,9 +46,10 @@ const St = {
     display: flex;
     gap: 8px;
     align-items: center;
-  `,
-  LeftIcon: styled.div`
-    & > * {height: 3.6rem;}
+    & svg {
+      height: 3.6rem;
+      width: 3.6rem;
+    }
   `,
   Titles: styled.div`
     display: flex;

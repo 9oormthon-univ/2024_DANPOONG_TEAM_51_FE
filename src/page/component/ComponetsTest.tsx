@@ -4,6 +4,7 @@ import ButtonSmall from './button/ButtonSmall';
 import Badge from './Badge';
 import ButtonBig from './button/ButtonBig';
 import Profile from './Profile';
+import IconExample from '@image/tabBar/chat.svg?react'
 
 const Index = () => {
   return (
@@ -22,6 +23,7 @@ const Index = () => {
         <Profile size='xl'/>
       </St.BadgeSet>
       <ButtonBig >Title</ButtonBig>
+      <ButtonBig leftIcon={IconExample} subtitle='예시 설명'>Title</ButtonBig>
       <ButtonBig subtitle='예시 설명'>Title</ButtonBig>
       <Button >확인</Button>
       <Button rightIcon >확인</Button>

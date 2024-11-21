@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import defaultProfile from "../../common/asset/image/user-profile-default.svg"
+import defaultProfile from "@image/user-profile-default.svg"
 
 interface ProfileProps {
   size?: "md" | "lg" | "xl" | "2xl";

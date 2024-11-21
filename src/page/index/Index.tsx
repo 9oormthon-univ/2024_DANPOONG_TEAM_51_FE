@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import Button from '../component/button/Button';
-import Logo from '../../common/asset/image/index/logo-title.png';
-import iconKakao from '../../common/asset/image/index/icon-kakao.svg';
+import Logo from '@image/index/logo-title.png';
+import iconKakao from '@image/index/icon-kakao.svg';
 import { IndexStyle } from '../../common/style/index/IndexStyle';
 import { useNavigate } from 'react-router-dom';
 
