@@ -48,7 +48,7 @@ const fonts = {
     font-family: 'Pretendard';
     font-size: 2.8rem;
     font-weight: 700;
-    line-height: 64px;
+    line-height: 44px;
   `,
   title_large: css`
     font-family: 'Pretendard';
