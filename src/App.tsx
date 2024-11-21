@@ -76,6 +76,7 @@ const St = {
     position: absolute;
     transform: translateX(-50%);
     overflow-y: auto;
+    overflow-x: hidden;
 
     background-image: url('/bg-gradient.png');
     background-size: cover;

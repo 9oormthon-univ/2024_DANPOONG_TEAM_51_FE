@@ -9,6 +9,7 @@ interface BtnGroupProps {
   isSpeakerphoneOn?: boolean;
   onMicToggle: ()=> void;
   isMicOn?: boolean;
+  onEndCallClick: ()=> void;
 }
 
 const BtnGroupVoiceCall = ({
@@ -16,15 +17,16 @@ const BtnGroupVoiceCall = ({
   isSpeakerphoneOn = false,
   onMicToggle,
   isMicOn = true,
-  
-  ...props
+  onEndCallClick,
 }: BtnGroupProps) => {
   return (
     <BtnGroup>
       <BtnToggleMic $isOn={isMicOn} onClick={onMicToggle}>
         {isMicOn? <MicIcon/>:<MicMutedIcon/>}
       </BtnToggleMic>
-      <CircleBtn><PhoneDownIcon/></CircleBtn>
+      <CircleBtn onClick={onEndCallClick}>
+        <PhoneDownIcon/>
+      </CircleBtn>
       <BtnToggleSpeakerphone 
         $isOn={isSpeakerphoneOn} 
         onClick={onSpeakerphoneToggle}
@@ -40,6 +42,7 @@ export default BtnGroupVoiceCall
 const BtnGroup = styled.div`
   display: flex;
   gap: 4rem;
+  isolation: isolate;
 `
 
 const CircleBtn = styled.button`

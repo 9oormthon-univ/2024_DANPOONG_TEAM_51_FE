@@ -20,29 +20,43 @@ const VoiceCall = () => {
     console.log("toggle Mic"); 
     setIsMicOn(!isMicOn);
   }
+  const handleEndCallClick = () => {
+    console.log("End Call Clicekd"); 
+    setCallState("after");
+  }
 
-  return (
-    <St.Wrapper>
-      {callState==="before" && <>
-        <St.InfoWrapper>
-          <ProfileWrapper/>
-          <St.ScheduleBox><CalenderIcon/>00월 00일(일) 오후 00:00</St.ScheduleBox>
-          <St.Heading>약속된 멘토링 시간이에요<br/>전화를 연결할까요?</St.Heading>
-        </St.InfoWrapper>
-        <Button onClick={()=>{setCallState("going")}}>전화 연결하기</Button>
-      </>}
-      {callState==="going" && <>
-        <BtnGroupVoiceCall 
+  return (<>
+    <St.Wrapper $dark={callState !== "before"}>
+      {callState !== "before" && <Background/>}
+
+      <St.InfoWrapper>
+        <ProfileWrapper/>
+        {callState==="before" && <BeforeCall/>}
+        {callState==="going" && <>
+          {/* loader, 통화시간 */}
+        </>}
+        {callState==="after" && <></>}
+      </St.InfoWrapper>
+
+      {/* 하단 버튼부 */}
+      {callState==="before" && <Button 
+          onClick={()=>{setCallState("going")}}>
+            전화 연결하기
+        </Button>}
+      {callState==="going" && <BtnGroupVoiceCall 
           isSpeakerphoneOn={isSpeakerphoneOn} 
           onSpeakerphoneToggle={handleSpeakerphoneToggle}
           isMicOn={isMicOn} 
           onMicToggle={handleMicToggle}
-        />
-      </>}
-      {callState==="after" && <>
-        
-      </>}
+          onEndCallClick={handleEndCallClick}
+        />}
+      {callState==="after" && <Button
+          style={{isolation:"isolate",}}
+          onClick={()=>{setCallState("before")}}>
+            홈으로 가기
+        </Button>}
     </St.Wrapper>
+  </>
   );
 
 };
@@ -61,12 +75,29 @@ const ProfileWrapper = () => {
   );
 }
 
+const BeforeCall = () => {
+  return (<>
+    <St.ScheduleBox><CalenderIcon/>00월 00일(일) 오후 00:00</St.ScheduleBox>
+    <St.Heading>
+      약속된 멘토링 시간이에요<br/>전화를 연결할까요?
+    </St.Heading>
+  </>);
+}
+
+const Background = () => {
+  return (<>
+    <St.BackgroundProfile><Profile/></St.BackgroundProfile>
+    <St.BackgroundBlur/>
+  </>);
+}
+
 const St = {
   ...VoiceCallStyle,
   InfoWrapper: styled.div`
     display: flex;
     flex-direction: column;
     gap: 48px;
+    isolation: isolate;
   `,
   ProfileWrapper: styled.div`
     display: flex;
@@ -92,5 +123,23 @@ const St = {
 
     ${({theme}) => theme.fonts.title_medium}
     svg {height: 2.4rem;}
-  `
+  `,
+  BackgroundProfile: styled.div`
+    position: absolute;
+    height: 80vh;
+    top: 10vh;
+    & > div {
+      height: 100%;
+      width: 100%
+    }
+  `,
+  BackgroundBlur: styled.div`
+    position:absolute;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+
+    background: linear-gradient(#000000B3, #00000000) #663A0080;
+    backdrop-filter: blur(10px);
+  `,
 }
