@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import Navigation from '@page/component/navi/Navigation';
 import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
-import background from '@image/chatting/bg-gradient.png';
 
 interface MessageData {
   text: string;
@@ -69,11 +68,6 @@ const St = {
     margin-top: 0;
     width: 100%;
     height: 100%;
-
-    background-image: url(${background});
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
   `,
 
   ChattingWrapper: styled.div`
