@@ -28,19 +28,16 @@ const Chatting = ({ messages }: ChattingProps) => {
     let lastDate = '';
 
     return messages.map((message, index) => {
+      const isUser = message.sender === 'user';
       const isNewDate = message.date !== lastDate;
       if (isNewDate) lastDate = message.date;
 
       return (
         <div key={index}>
           {isNewDate && <DateLabel>{formatDate(message.date)}</DateLabel>}
-          <MessageContainer $isUser={message.sender === 'user'}>
-            <MessageWrapper $isUser={message.sender === 'user'}>
-              {message.text}
-            </MessageWrapper>
-            <TimeLabel $isUser={message.sender === 'user'}>
-              {message.time}
-            </TimeLabel>
+          <MessageContainer $isUser={isUser}>
+            <MessageWrapper $isUser={isUser}>{message.text}</MessageWrapper>
+            <TimeLabel $isUser={isUser}>{message.time}</TimeLabel>
           </MessageContainer>
         </div>
       );

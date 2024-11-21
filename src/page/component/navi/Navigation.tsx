@@ -87,7 +87,7 @@ const St = {
   `,
 
   TitleText: styled.div<{ $isOnlyTitle: boolean }>`
-    color: ${({ theme }) => theme.colors.black};
+    color: ${({ theme }) => theme.colors.gray700};
     ${({ theme }) => theme.fonts.title_large};
     flex-grow: 1;
     margin-left: ${({ $isOnlyTitle }) => ($isOnlyTitle ? '20px' : '0px')};

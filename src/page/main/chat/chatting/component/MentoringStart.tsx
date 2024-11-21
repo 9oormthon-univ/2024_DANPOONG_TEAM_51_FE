@@ -23,7 +23,9 @@ const St = {
     border-radius: 16px;
     border: none;
     padding: 18px 16px;
-    margin: 20px 20px 0px 20px;
+    margin: 20px;
+    display: flex;
+    align-items: center;
     height: 66px;
   `,
 

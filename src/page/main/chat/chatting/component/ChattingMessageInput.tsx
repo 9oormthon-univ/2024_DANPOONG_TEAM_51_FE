@@ -53,6 +53,7 @@ const St = {
     display: flex;
     padding: 8px;
     border-top: 1px solid ${({ theme }) => theme.colors.gray200};
+    align-items: center;
   `,
 
   ButtonBoxWrapper: styled.div`
@@ -78,7 +79,6 @@ const St = {
     border-radius: 16px;
     border: none;
     ${({ theme }) => theme.fonts.body_medium};
-    margin-top: 4px;
     margin-right: 8px;
     background-color: ${({ theme }) => theme.colors.white};
     outline: none;
