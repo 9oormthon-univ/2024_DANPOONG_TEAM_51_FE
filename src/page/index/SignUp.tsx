@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import Button from '../component/button/Button';
 import { IndexStyle } from '../../common/style/index/IndexStyle';
-import tooltipTriangle from '../../common/asset/image/index/tooltip-triangle.png';
+import tooltipTriangle from '@image/index/tooltip-triangle.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
