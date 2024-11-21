@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import Button from '../component/button/Button';
+import Button from './Button';
 
 const Index = () => {
   return (
@@ -30,9 +30,7 @@ const St = {
     justify-content: center;
     flex-direction: column;
     gap: 2rem;
-
-    width: 30rem;
-    padding: 5rem;
+    padding: 5rem 2rem;
   `,
   HomeTitle: styled.h1`
     ${({ theme }) => theme.fonts.display_medium};
