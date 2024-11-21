@@ -11,21 +11,23 @@ import SignUp from './page/index/SignUp';
 import ChattingPage from '@main/chat/chatting/ChattingPage';
 
 import ComponentsTest from './page/component/ComponetsTest';
+import KakaoCallback from '@page/index/KakaoCallBack';
 
 const Router = () => {
   return (
     <BrowserRouter>
       <Suspense>
         <Routes>
-          <Route path="/" element={<App />}>
-            <Route path="home" element={<HomePage />} />   
-            <Route path="chat" element={<ChatPage />} />
-            <Route path="mypage" element={<MyPage />} />
-            <Route path="index" element={<Index />} />
-            <Route path="signup" element={<SignUp />} />
+          <Route path='/' element={<App />}>
+            <Route path='home' element={<HomePage />} />
+            <Route path='chat' element={<ChatPage />} />
+            <Route path='mypage' element={<MyPage />} />
+            <Route path='index' element={<Index />} />
+            <Route path='signup' element={<SignUp />} />
             <Route path='chatting/example' element={<ChattingPage />} />
 
-            <Route path="components-test" element={<ComponentsTest />} />
+            <Route path='components-test' element={<ComponentsTest />} />
+            <Route path='/oauth' element={<KakaoCallback />} />
           </Route>
         </Routes>
       </Suspense>
