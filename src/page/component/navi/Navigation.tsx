@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 import BackButtonIcon from '@image/component/chevron-left.svg?react';
 import LogoIcon from '@image/component/cone_logo.svg?react';
+import Badge from '@page/component/Badge';
 
 interface NavigationProps {
   title?: string;
@@ -48,7 +49,11 @@ const Navigation = ({
         {userName && (
           <St.UserInfoBox>
             <St.UserNameText>{userName}</St.UserNameText>
-            <St.UserLabel>{label === '멘토' ? '멘토' : '멘티'}</St.UserLabel>
+            {label === '멘토' ? (
+              <Badge variant='badge-orange'>멘토</Badge>
+            ) : (
+              <Badge variant='badge-pink'>멘티</Badge>
+            )}
           </St.UserInfoBox>
         )}
         <St.EmptyBox />
