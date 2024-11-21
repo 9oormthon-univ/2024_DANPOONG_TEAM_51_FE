@@ -5,6 +5,7 @@ import MicMutedIcon from '@image/voicecall/mic-muted.svg?react'
 import PhoneDownIcon from '@image/voicecall/phone-down.svg?react'
 
 interface BtnGroupProps {
+  isConnected: boolean;
   onSpeakerphoneToggle: ()=> void;
   isSpeakerphoneOn?: boolean;
   onMicToggle: ()=> void;
@@ -13,6 +14,7 @@ interface BtnGroupProps {
 }
 
 const BtnGroupVoiceCall = ({
+  isConnected,
   onSpeakerphoneToggle,
   isSpeakerphoneOn = false,
   onMicToggle,
@@ -21,18 +23,18 @@ const BtnGroupVoiceCall = ({
 }: BtnGroupProps) => {
   return (
     <BtnGroup>
-      <BtnToggleMic $isOn={isMicOn} onClick={onMicToggle}>
+      {isConnected && <BtnToggleMic $isOn={isMicOn} onClick={onMicToggle}>
         {isMicOn? <MicIcon/>:<MicMutedIcon/>}
-      </BtnToggleMic>
+      </BtnToggleMic>}
       <CircleBtn onClick={onEndCallClick}>
         <PhoneDownIcon/>
       </CircleBtn>
-      <BtnToggleSpeakerphone 
+      {isConnected && <BtnToggleSpeakerphone 
         $isOn={isSpeakerphoneOn} 
         onClick={onSpeakerphoneToggle}
       >
         <SpeakerphoneIcon/>
-      </BtnToggleSpeakerphone>
+      </BtnToggleSpeakerphone>}
     </BtnGroup>
   );
 }

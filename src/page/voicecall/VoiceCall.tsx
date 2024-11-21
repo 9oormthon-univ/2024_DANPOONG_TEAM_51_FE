@@ -3,12 +3,14 @@ import { useState } from "react";
 import { VoiceCallStyle } from "@style/voicecall/VoiceCallStyle";
 import CalenderIcon from "@image/voicecall/calendar.svg?react"
 import Button from "@component/button/Button";
-import Badge from "@component/Badge";
 import Profile from "@component/Profile";
 import BtnGroupVoiceCall from "./component/BtnGroupVoiceCall";
+import Loader from "./component/Loader";
+import ProfileWrapper from "./component/ProfileWrapper";
 
 const VoiceCall = () => {
   const [callState, setCallState] = useState<"before"|"going"|"after">("before");
+  const [isConnected, setIsConnected] = useState(false);
   const [isSpeakerphoneOn, setIsSpeakerphoneOn] = useState(false)
   const [isMicOn, setIsMicOn] = useState(true)
 
@@ -23,6 +25,7 @@ const VoiceCall = () => {
   const handleEndCallClick = () => {
     console.log("End Call Clicekd"); 
     setCallState("after");
+    setIsConnected(false);
   }
 
   return (<>
@@ -30,20 +33,33 @@ const VoiceCall = () => {
       {callState !== "before" && <Background/>}
 
       <St.InfoWrapper>
-        <ProfileWrapper/>
+        <ProfileWrapper
+          name="김구름"
+          role="멘토"
+          isConnected={isConnected}
+        />
         {callState==="before" && <BeforeCall/>}
-        {callState==="going" && <>
-          {/* loader, 통화시간 */}
-        </>}
+        {callState==="going" && <St.Info>
+            { isConnected ? 
+              <TimeCounter secondsPassed={222} /> : "연결중"
+            }
+          { !isConnected && <Loader/> }
+        </St.Info>}
         {callState==="after" && <></>}
       </St.InfoWrapper>
 
       {/* 하단 버튼부 */}
       {callState==="before" && <Button 
-          onClick={()=>{setCallState("going")}}>
+          onClick={()=>{
+            setCallState("going");
+            setTimeout(() => {
+              setIsConnected(true);
+            }, 3000);
+            }}>
             전화 연결하기
         </Button>}
-      {callState==="going" && <BtnGroupVoiceCall 
+      {callState==="going" && <BtnGroupVoiceCall
+          isConnected={isConnected}
           isSpeakerphoneOn={isSpeakerphoneOn} 
           onSpeakerphoneToggle={handleSpeakerphoneToggle}
           isMicOn={isMicOn} 
@@ -63,18 +79,6 @@ const VoiceCall = () => {
 
 export default VoiceCall;
 
-const ProfileWrapper = () => {
-  return (
-    <St.ProfileWrapper>
-      <St.NameWrapper>
-        <St.Name>김구름</St.Name>
-        <Badge variant="badge-orange">멘토</Badge>
-      </St.NameWrapper>
-      <Profile size="2xl"/>
-    </St.ProfileWrapper>
-  );
-}
-
 const BeforeCall = () => {
   return (<>
     <St.ScheduleBox><CalenderIcon/>00월 00일(일) 오후 00:00</St.ScheduleBox>
@@ -91,6 +95,14 @@ const Background = () => {
   </>);
 }
 
+const TimeCounter = ({secondsPassed}:{secondsPassed:number}) => {
+  const min = String(Math.floor(secondsPassed / 60)).padStart(2,'0');
+  const sec = String(secondsPassed % 60).padStart(2,'0');
+  return (
+    `${min}:${sec}`
+  );
+}
+
 const St = {
   ...VoiceCallStyle,
   InfoWrapper: styled.div`
@@ -98,20 +110,7 @@ const St = {
     flex-direction: column;
     gap: 48px;
     isolation: isolate;
-  `,
-  ProfileWrapper: styled.div`
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 60px;
-  `,
-  NameWrapper: styled.div`
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  `,
-  Name: styled.span`
-    ${({theme}) => theme.fonts.title_large}
   `,
   ScheduleBox: styled.div`
     display: flex;
@@ -142,4 +141,11 @@ const St = {
     background: linear-gradient(#000000B3, #00000000) #663A0080;
     backdrop-filter: blur(10px);
   `,
+  Info: styled.div`
+    ${ ({theme}) => theme.fonts.title_medium }
+    color: ${ ({theme}) => theme.colors.gray200 };
+    display: flex;
+    flex-direction:column;
+    gap: 1.6rem;
+  `
 }
