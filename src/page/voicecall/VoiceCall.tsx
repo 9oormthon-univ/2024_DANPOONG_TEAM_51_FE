@@ -27,6 +27,7 @@ const serverUri = import.meta.env.VITE_APP_BASE_URL;
 const VoiceCall = () => {
   const socketRef = useRef<Socket>(); // socket 연결
   const pcRef = useRef<RTCPeerConnection>(); // webRTC 연결
+  const streamRef = useRef<MediaStream | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null); // 내 오디오
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null); // 상대 오디오
   const recorderRef = useRef<RecordRTC>(); // 통화녹음기
@@ -129,7 +130,7 @@ const VoiceCall = () => {
     navigator.mediaDevices
       .getUserMedia({ video: false, audio: true })
       .then((stream) => {
-        // setStream(stream);
+        streamRef.current = stream;
         const audioTracks = stream.getAudioTracks();
         console.log("Got stream with audio device: " + audioTracks[0].label);
         if (audioRef.current) {
@@ -221,6 +222,8 @@ const VoiceCall = () => {
     setIsSpeakerphoneOn(!isSpeakerphoneOn);
   }
   const handleMicToggle = () => {
+    if(!streamRef.current) return;
+    streamRef.current.getAudioTracks()[0].enabled = !isMicOn;
     console.log("toggle Mic"); 
     setIsMicOn(!isMicOn);
   }
@@ -374,7 +377,7 @@ const St = {
 }
 
 const uploadRecord = (blob: Blob) => {
-  const filename = `record-${Date().replace(" ", "-")}.webm`;
+  const filename = `record-${Date().replace(/ /g, "-")}.webm`;
 
   // TODO: DB 업로드 코드로 대체
   const a = document.createElement("a");
