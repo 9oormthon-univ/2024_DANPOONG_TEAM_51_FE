@@ -7,7 +7,7 @@ import { useLocation, Outlet } from 'react-router-dom';
 
 import TabBar from './page/main/component/TabBar';
 
-const hiddenPaths = ['/index', '/login', '/signup', '/chatting/example']; // 예시 path
+const hiddenPaths = ['/index', '/login', '/signup', '/voice-call', '/chatting/example']; // 예시 path
 
 function App() {
   const { pathname } = useLocation();
@@ -76,6 +76,7 @@ const St = {
     position: absolute;
     transform: translateX(-50%);
     overflow-y: auto;
+    overflow-x: hidden;
 
     background-image: url('/bg-gradient.png');
     background-size: cover;

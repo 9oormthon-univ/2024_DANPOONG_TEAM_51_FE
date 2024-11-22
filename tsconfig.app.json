@@ -8,10 +8,12 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@components/*": ["src/page/components/*"],
+      "@/*": ["src/*"],
+      "@component/*": ["src/page/component/*"],
       "@page/*": ["src/page/*"],
       "@shared/*": ["src/shared/*"],
       "@image/*": ["src/common/asset/image/*"],
+      "@style/*": ["src/common/style/*"],
       "@main/*": ["src/page/main/*"]
     },
 
