@@ -5,7 +5,7 @@ import { ComponentProps } from "react";
 export interface ButtonBigProps extends ComponentProps<"button"> {
   variant?: "primary" | "secondary";
   rightIcon?: boolean;
-  leftIcon?: React.FunctionComponent<React.ComponentProps<"svg">>;
+  LeftIcon?: React.FunctionComponent<React.ComponentProps<"svg">>;
   selected?: boolean;
   subtitle?: string;
   children: React.ReactNode;
@@ -14,12 +14,14 @@ export interface ButtonBigProps extends ComponentProps<"button"> {
 const ButtonBig = ({
   variant = "primary",
   rightIcon = true,
+  LeftIcon,
+  ref,
   ...props
 }: ButtonBigProps) => {
   return(
-    <St.ButtonBig rightIcon={rightIcon} $variant={variant} disabled={props.disabled}>
+    <St.ButtonBig rightIcon={rightIcon} $variant={variant} disabled={props.disabled} {...props}>
       <St.LeftWrapper>
-        {props.leftIcon && <props.leftIcon/>}
+        {LeftIcon && <LeftIcon/>}
         <St.Titles>
           {props.children}
           {props.subtitle &&
