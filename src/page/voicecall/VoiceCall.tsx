@@ -31,8 +31,8 @@ const VoiceCall = () => {
   }
 
   return (<>
-    <St.Wrapper $dark={callState !== "before"}>
-      {callState !== "before" && <Background/>}
+    <St.Wrapper>
+      <Background/>
 
       <St.InfoWrapper>
         <ProfileWrapper
@@ -56,29 +56,30 @@ const VoiceCall = () => {
           </St.Heading>}
       </St.InfoWrapper>
 
+      <St.ButtonWrapper>
       {/* 하단 버튼부 */}
-      {callState==="before" && <Button 
-          onClick={()=>{
-            setCallState("going");
-            setTimeout(() => {
-              setIsConnected(true);
-            }, 3000);
-            }}>
-            전화 연결하기
-        </Button>}
-      {callState==="going" && <BtnGroupVoiceCall
-          isConnected={isConnected}
-          isSpeakerphoneOn={isSpeakerphoneOn} 
-          onSpeakerphoneToggle={handleSpeakerphoneToggle}
-          isMicOn={isMicOn} 
-          onMicToggle={handleMicToggle}
-          onEndCallClick={handleEndCallClick}
-        />}
-      { (callState==="after" || callState==="error") && <Button
-          style={{isolation:"isolate",}}
-          onClick={()=>{navigate("/home")}}>
-            홈으로 가기
-        </Button>}
+        {callState==="before" && <Button 
+            onClick={()=>{
+              setCallState("going");
+              setTimeout(() => {
+                setIsConnected(true);
+              }, 3000);
+              }}>
+              전화 연결하기
+          </Button>}
+        {callState==="going" && <BtnGroupVoiceCall
+            isConnected={isConnected}
+            isSpeakerphoneOn={isSpeakerphoneOn} 
+            onSpeakerphoneToggle={handleSpeakerphoneToggle}
+            isMicOn={isMicOn} 
+            onMicToggle={handleMicToggle}
+            onEndCallClick={handleEndCallClick}
+          />}
+        { (callState==="after" || callState==="error") && <Button
+            onClick={()=>{navigate("/home")}}>
+              홈으로 가기
+          </Button>}
+      </St.ButtonWrapper>
     </St.Wrapper>
   </>
   );
@@ -124,7 +125,7 @@ const St = {
     display: flex;
     gap: 4px;
     border-radius: 2.4rem;
-    background-color: #663A0033;
+    background-color: #ffffff66;
     padding: 2.4rem;
     margin: 0 auto 0.4rem auto;
 
@@ -155,5 +156,8 @@ const St = {
     display: flex;
     flex-direction:column;
     gap: 1.6rem;
+  `,
+  ButtonWrapper: styled.div`
+    isolation: isolate;
   `
 }
