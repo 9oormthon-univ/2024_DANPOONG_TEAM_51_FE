@@ -5,14 +5,19 @@ import CalenderIcon from "@image/voicecall/calendar.svg?react"
 import Button from "@component/button/Button";
 import Profile from "@component/Profile";
 import BtnGroupVoiceCall from "./component/BtnGroupVoiceCall";
+import BtnGroupCallee from "./component/BtnGroupCallee";
 import Loader from "./component/Loader";
 import ProfileWrapper from "./component/ProfileWrapper";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 
 interface SignalData {
   sdp: RTCSessionDescription;
   candidate: RTCIceCandidate;
+}
+
+interface LocationStateData {
+  data: SignalData;
 }
 
 const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
@@ -25,10 +30,12 @@ const VoiceCall = () => {
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null); // 상대 오디오
   
   const navigate = useNavigate();
-  const [callState, setCallState] = useState<"before"|"going"|"after"|"error">("before");
+  const locationState = useLocation().state as LocationStateData;
+  const [callState, setCallState] = useState<"before"|"going"|"after"|"failure">("going");
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeakerphoneOn, setIsSpeakerphoneOn] = useState(false)
   const [isMicOn, setIsMicOn] = useState(true)
+
 
   useEffect(() => {
     // WebSocket 연결
@@ -57,15 +64,16 @@ const VoiceCall = () => {
     console.log("peerConnection: ", pcRef.current);
 
     // 소켓 리스너
-    // "offer" 받음
-    socket.on("offer", (data: SignalData) => {
-      console.log("Callee: received Offer from Caller.");
-      pc.setRemoteDescription(data.sdp).then(() => {
-        createAnswer();
-        setIsConnected(true);
-        console.log("Callee: record Started");
-      });
-    });
+
+    if (locationState) {
+      setCallState("before");
+      // "offer" 받음
+      console.log("locationState: ", locationState);
+      pc.setRemoteDescription(locationState.data.sdp);
+    } else {
+      // '전화걸기'를 눌러 들어온 Caller는 바로 전화 발신
+      Call();
+    }
 
     // answer 받음
     socket.on("answer", (data: SignalData) => {
@@ -165,20 +173,25 @@ const VoiceCall = () => {
     }
   }
 
+  const Cancel = () => {
+    setCallState("failure");
+  }
+
   // answer 송신
-  const createAnswer = async () => {
+  const Recieve = async () => {
     console.log("Callee: create answer");
     if (!(pcRef.current && socketRef.current)) {
+      setCallState("failure");
       return;
     }
     try {
-      if (pcRef.current.signalingState === "have-remote-offer") {
-        const sdp = await pcRef.current.createAnswer();
-        pcRef.current.setLocalDescription(sdp);
-        socketRef.current.emit("answer", { sdp });
-      }
+      const sdp = await pcRef.current.createAnswer();
+      pcRef.current.setLocalDescription(sdp);
+      socketRef.current.emit("answer", { sdp });
+      setIsConnected(true); 
     } catch (e) {
       console.error(e);
+      setCallState("failure");
     }
   }
 
@@ -192,7 +205,11 @@ const VoiceCall = () => {
     setIsMicOn(!isMicOn);
   }
   const handleEndCallClick = () => {
-    console.log("End Call Clicekd"); 
+    console.log("End Call Clicekd");
+    if (!isConnected) {
+      Cancel();
+      return;
+    }
     setCallState("after");
     if (!pcRef.current) return;
     pcRef.current.close();
@@ -224,17 +241,17 @@ const VoiceCall = () => {
           <St.Heading>멘토링이 종료되었어요</St.Heading>
           <St.Info><TimeCounter secondsPassed={601}/></St.Info>
           </>}
-        {callState==="error" && <St.Heading>
+        {callState==="failure" && <St.Heading>
           전화 연결에 실패하였어요
           </St.Heading>}
       </St.InfoWrapper>
 
       <St.ButtonWrapper>
       {/* 하단 버튼부 */}
-        {callState==="before" && <Button 
-            onClick={Call}>
-              전화 연결하기
-          </Button>}
+        {callState==="before" && <BtnGroupCallee 
+            onReceive={Recieve}
+            onReject={Cancel}
+            />}
         {callState==="going" && <BtnGroupVoiceCall
             isConnected={isConnected}
             isSpeakerphoneOn={isSpeakerphoneOn} 
@@ -243,7 +260,7 @@ const VoiceCall = () => {
             onMicToggle={handleMicToggle}
             onEndCallClick={handleEndCallClick}
           />}
-        { (callState==="after" || callState==="error") && <Button
+        { (callState==="after" || callState==="failure") && <Button
             onClick={()=>{navigate("/home")}}>
               홈으로 가기
           </Button>}
@@ -258,10 +275,12 @@ export default VoiceCall;
 
 const BeforeCall = () => {
   return (<>
-    <St.ScheduleBox><CalenderIcon/>00월 00일(일) 오후 00:00</St.ScheduleBox>
-    <St.Heading>
-      약속된 멘토링 시간이에요<br/>전화를 연결할까요?
-    </St.Heading>
+    <St.BeforeCall>
+      <St.ScheduleBox>
+        <CalenderIcon/>00월 00일(일) 오후 00:00
+      </St.ScheduleBox>
+        상대가 전화를 걸었어요<br/>정시에 맞춰 전화를 받아도 돼요
+    </St.BeforeCall>
   </>);
 }
 
@@ -288,6 +307,15 @@ const St = {
     gap: 48px;
     isolation: isolate;
     align-items: center;
+  `,
+  BeforeCall: styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+    
+    ${({theme}) => theme.fonts.title_medium}
   `,
   ScheduleBox: styled.div`
     display: flex;
