@@ -19,7 +19,7 @@ const ButtonBig = ({
   ...props
 }: ButtonBigProps) => {
   return(
-    <St.ButtonBig rightIcon={rightIcon} $variant={variant} disabled={props.disabled} {...props}>
+    <St.ButtonBig rightIcon={rightIcon} $variant={variant} {...props}>
       <St.LeftWrapper>
         {LeftIcon && <LeftIcon/>}
         <St.Titles>
@@ -54,10 +54,17 @@ const St = {
         case "primary":
           return`
             background: ${props.theme.gradients.pinktoyellow};
+            &:enabled:active {
+                  background-color: transparent;
+                  opacity: 0.8;
+            }
           `
         case "secondary":
           return`
             background: transparent;
+            &:enabled:active {
+                  background-color: #ffffff33;
+                }
           `
       }
     }}
