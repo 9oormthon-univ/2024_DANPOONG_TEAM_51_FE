@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VoiceCallStyle } from "@style/voicecall/VoiceCallStyle";
 import CalenderIcon from "@image/voicecall/calendar.svg?react"
 import Button from "@component/button/Button";
@@ -8,14 +8,92 @@ import BtnGroupVoiceCall from "./component/BtnGroupVoiceCall";
 import Loader from "./component/Loader";
 import ProfileWrapper from "./component/ProfileWrapper";
 import { useNavigate } from "react-router-dom";
+import { io, Socket } from "socket.io-client";
+
+const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
+const serverUri = import.meta.env.VITE_APP_BASE_URL;
 
 const VoiceCall = () => {
+  const socketRef = useRef<Socket>(); // socket 연결
+  const pcRef = useRef<RTCPeerConnection>(); // webRTC 연결
+  const audioRef = useRef<HTMLAudioElement | null>(null); // 내 오디오
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null); // 상대 오디오
+  
   const navigate = useNavigate();
   const [callState, setCallState] = useState<"before"|"going"|"after"|"error">("before");
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeakerphoneOn, setIsSpeakerphoneOn] = useState(false)
   const [isMicOn, setIsMicOn] = useState(true)
 
+  useEffect(() => {
+    const socket = io(signalUri, {
+      query: {roomId: 1 },
+      withCredentials: true,
+    })
+
+    console.log(socketRef.current);
+    socketRef.current = socket;
+
+    // ICE 설정
+    const iceConfig = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:stun3.l.google.com:19302" },
+      ],
+    };
+
+    const pc = new RTCPeerConnection(iceConfig);
+    pcRef.current = pc;
+    
+    console.log("socket: ", socketRef.current);
+    console.log("peerConnection: ", pcRef.current);
+  
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        // setStream(stream);
+        const audioTracks = stream.getAudioTracks();
+        console.log("Got stream with audio device: " + audioTracks[0].label);
+        if (audioRef.current) {
+          // 오디오 스트림 등록
+          audioRef.current.srcObject = stream;
+        }
+        // peerconnection에 스트림 등록
+        audioTracks.forEach((track) => pcRef.current?.addTrack(track, stream));
+
+        // TODO: 각자 자신의 로컬스트림 녹음하기
+      })
+      .catch(handleGUMError);
+
+    return () => {
+      
+    }
+  }, [])
+
+  const handleGUMError = (error: DOMException) => {
+    /* getUserMedia 실패 */
+    const errorMessage =
+      "navigator.MediaDevices.getUserMedia error: " +
+      error.message +
+      " " +
+      error.name;
+    console.error(errorMessage);
+    if(error.name === "NotAllowedError"){
+      alert("멘토링 진행을 위해 마이크 사용 권한을 허용해주세요.")
+    } else {
+      alert("마이크 장치를 불러오지 못했습니다.")
+    }
+  }
+
+  const Call = async () => {
+    console.log("Caller: create offer");
+    if (!(pcRef.current && socketRef.current)) return;
+    setCallState("going");
+  }
+
+  /* BtnGroup 핸들러 */
   const handleSpeakerphoneToggle = () => {
     console.log("toggle speakerphone"); 
     setIsSpeakerphoneOn(!isSpeakerphoneOn);
@@ -32,6 +110,8 @@ const VoiceCall = () => {
 
   return (<>
     <St.Wrapper>
+      <audio ref={audioRef} muted>{/* 내 오디오 */}</audio>
+      <audio ref={remoteAudioRef} autoPlay>{/* 상대방 오디오 */}</audio>
       <Background/>
 
       <St.InfoWrapper>
@@ -59,12 +139,7 @@ const VoiceCall = () => {
       <St.ButtonWrapper>
       {/* 하단 버튼부 */}
         {callState==="before" && <Button 
-            onClick={()=>{
-              setCallState("going");
-              setTimeout(() => {
-                setIsConnected(true);
-              }, 3000);
-              }}>
+            onClick={Call}>
               전화 연결하기
           </Button>}
         {callState==="going" && <BtnGroupVoiceCall
