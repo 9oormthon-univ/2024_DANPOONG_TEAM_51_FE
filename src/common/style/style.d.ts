@@ -34,6 +34,11 @@ declare module 'styled-components' {
       white50: string;
     };
 
+    gradients: {
+      pinktoyellow: string;
+      yellowtopink: string;
+    }
+
     fonts: {
       display_large: SerializedStyles;
       display_medium: SerializedStyles;
