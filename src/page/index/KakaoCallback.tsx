@@ -12,6 +12,7 @@ const KakaoCallback = () => {
     const handleSocialLogin = async () => {
       try {
         const code = new URL(window.location.href).searchParams.get('code');
+        console.log(code);
 
         if (!code) {
           console.error('Authorization code not found.');
