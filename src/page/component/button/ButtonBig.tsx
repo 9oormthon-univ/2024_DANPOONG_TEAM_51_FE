@@ -3,7 +3,7 @@ import Button from "./Button";
 import { ComponentProps } from "react";
 
 export interface ButtonBigProps extends ComponentProps<"button"> {
-  variant?: "default" | "special" | "storke";
+  variant?: "primary" | "secondary";
   rightIcon?: boolean;
   leftIcon?: React.FunctionComponent<React.ComponentProps<"svg">>;
   selected?: boolean;
@@ -12,13 +12,12 @@ export interface ButtonBigProps extends ComponentProps<"button"> {
 }
 
 const ButtonBig = ({
-  variant = "default",
-  rightIcon = false, 
-  selected = false,
+  variant = "primary",
+  rightIcon = true,
   ...props
 }: ButtonBigProps) => {
   return(
-    <St.ButtonBig rightIcon>
+    <St.ButtonBig rightIcon={rightIcon} $variant={variant} disabled={props.disabled}>
       <St.LeftWrapper>
         {props.leftIcon && <props.leftIcon/>}
         <St.Titles>
@@ -35,12 +34,37 @@ const ButtonBig = ({
 export default ButtonBig;
 
 const St = {
-  ButtonBig: styled(Button)`
+  ButtonBig: styled(Button)<{
+    $variant: ButtonBigProps["variant"];
+    }>`
     padding: 2.4rem;
     border-radius: 1.6rem;
-    path { /* 아이콘 색상 */
-                    stroke: ${({theme}) => theme.colors.orange95};
+    
+    color: ${({theme}) => theme.colors.gray700};
+    border: 1px solid ${({theme}) => theme.colors.orange70};
+    path { /* Right Icon Color */
+                    stroke: ${({theme}) => theme.colors.gray600};
                   }
+    
+    /* variant별 색상 */
+    ${(props) => {
+      switch (props.$variant) {
+        case "primary":
+          return`
+            background: ${props.theme.gradients.pinktoyellow};
+          `
+        case "secondary":
+          return`
+            background: transparent;
+          `
+      }
+    }}
+
+    &:disabled {
+      background: #361E0033;
+      border: none;
+    }
+
   `,
   LeftWrapper: styled.div`
     display: flex;
@@ -49,6 +73,9 @@ const St = {
     & svg {
       height: 3.6rem;
       width: 3.6rem;
+      path { /* Left Icon Color */
+        stroke: ${({theme}) => theme.colors.orange70};
+      }
     }
   `,
   Titles: styled.div`
@@ -59,6 +86,6 @@ const St = {
   `,
   Subtitle: styled.div`
     ${ ({theme}) => theme.fonts.title_small}
-    color: ${ ({theme}) => theme.colors.orange95};
+    color: ${ ({theme}) => theme.colors.gray600};
   `,
 }
