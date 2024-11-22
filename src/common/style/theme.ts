@@ -31,6 +31,11 @@ const colors = {
   white50: '#80FFFFFF',
 };
 
+const gradients = {
+  pinktoyellow: 'linear-gradient(to right, #FDD5F2, #FBE7CE 70%)',
+  yellowtopink: 'linear-gradient(to right, #FBE7CE 50%, #FDD5F2)',
+}
+
 const fonts = {
   display_large: css`
     font-family: 'Pretendard-Bold';
@@ -94,5 +99,5 @@ const fonts = {
   `,
 };
 
-const theme: DefaultTheme = { colors, fonts };
+const theme: DefaultTheme = { colors, gradients, fonts };
 export default theme;
