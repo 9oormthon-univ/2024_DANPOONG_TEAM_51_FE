@@ -22,7 +22,7 @@ const St = {
   Badge: styled.span<{
     $variant: BadgeProps["variant"];
   }>`
-    height: 100%;
+    height: 3.2rem;
     padding: 0.8rem;
     ${({ theme }) => theme.fonts.title_small}
     border-radius: 3.6rem;

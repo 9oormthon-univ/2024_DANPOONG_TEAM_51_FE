@@ -9,6 +9,7 @@ import MyPage from './page/main/mypage/Mypage';
 import Index from './page/index/Index';
 import SignUp from './page/index/SignUp';
 import ChattingPage from '@main/chat/chatting/ChattingPage';
+import VoiceCall from './page/voicecall/VoiceCall';
 
 import ComponentsTest from './page/component/ComponetsTest';
 import KakaoCallback from '@page/index/KakaoCallBack';
@@ -25,8 +26,9 @@ const Router = () => {
             <Route path='index' element={<Index />} />
             <Route path='signup' element={<SignUp />} />
             <Route path='chatting/example' element={<ChattingPage />} />
-
-            <Route path='components-test' element={<ComponentsTest />} />
+            <Route path="voice-call" element={<VoiceCall />} />
+            
+            <Route path="components-test" element={<ComponentsTest />} />
             <Route path='/oauth' element={<KakaoCallback />} />
           </Route>
         </Routes>
