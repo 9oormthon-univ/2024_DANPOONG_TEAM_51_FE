@@ -10,6 +10,7 @@ import Loader from "./component/Loader";
 import ProfileWrapper from "./component/ProfileWrapper";
 import { useLocation, useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
+import RecordRTC from "recordrtc";
 
 interface SignalData {
   sdp: RTCSessionDescription;
@@ -28,6 +29,7 @@ const VoiceCall = () => {
   const pcRef = useRef<RTCPeerConnection>(); // webRTC 연결
   const audioRef = useRef<HTMLAudioElement | null>(null); // 내 오디오
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null); // 상대 오디오
+  const recorderRef = useRef<RecordRTC>(); // 통화녹음기
   
   const navigate = useNavigate();
   const locationState = useLocation().state as LocationStateData;
@@ -83,6 +85,8 @@ const VoiceCall = () => {
       }
       pc.setRemoteDescription(data.sdp);
       setIsConnected(true);
+      recorderRef.current?.startRecording();
+      console.log("Caller: record Started");
     });
 
     // candidate 받음
@@ -135,7 +139,8 @@ const VoiceCall = () => {
         // peerconnection에 스트림 등록
         audioTracks.forEach((track) => pcRef.current?.addTrack(track, stream));
 
-        // TODO: 각자 자신의 로컬스트림 녹음하기
+        // 각자 자신의 로컬스트림을 녹음
+        recorderRef.current = new RecordRTC(stream, {type: "audio"});
       })
       .catch(handleGUMError);
 
@@ -173,10 +178,6 @@ const VoiceCall = () => {
     }
   }
 
-  const Cancel = () => {
-    setCallState("failure");
-  }
-
   // answer 송신
   const Recieve = async () => {
     console.log("Callee: create answer");
@@ -188,11 +189,30 @@ const VoiceCall = () => {
       const sdp = await pcRef.current.createAnswer();
       pcRef.current.setLocalDescription(sdp);
       socketRef.current.emit("answer", { sdp });
-      setIsConnected(true); 
+      setIsConnected(true);
+      recorderRef.current?.startRecording();
+      console.log("Callee: record Started");
     } catch (e) {
       console.error(e);
       setCallState("failure");
     }
+  }
+
+  const CancelCall = () => {
+    setCallState("failure");
+  }
+
+  const EndCall = () => {
+    setCallState("after");
+    if (!pcRef.current) return;
+    pcRef.current.close();
+    setIsConnected(false);
+    if(!recorderRef.current) return;
+    console.log("download record...");
+    recorderRef.current.stopRecording(() => {
+      const blob = recorderRef.current!.getBlob();
+      uploadRecord(blob);
+    });
   }
 
   /* BtnGroup 핸들러 */
@@ -207,15 +227,10 @@ const VoiceCall = () => {
   const handleEndCallClick = () => {
     console.log("End Call Clicekd");
     if (!isConnected) {
-      Cancel();
+      CancelCall();
       return;
     }
-    setCallState("after");
-    if (!pcRef.current) return;
-    pcRef.current.close();
-    setIsConnected(false);
-
-    // TODO: 녹음 종료
+    EndCall();
   }
 
   return (<>
@@ -250,7 +265,7 @@ const VoiceCall = () => {
       {/* 하단 버튼부 */}
         {callState==="before" && <BtnGroupCallee 
             onReceive={Recieve}
-            onReject={Cancel}
+            onReject={CancelCall}
             />}
         {callState==="going" && <BtnGroupVoiceCall
             isConnected={isConnected}
@@ -356,4 +371,27 @@ const St = {
   ButtonWrapper: styled.div`
     isolation: isolate;
   `
+}
+
+const uploadRecord = (blob: Blob) => {
+  const filename = `record-${Date().replace(" ", "-")}.webm`;
+
+  // TODO: DB 업로드 코드로 대체
+  const a = document.createElement("a");
+  a.href = webkitURL.createObjectURL(blob);
+  a.download = filename;
+  (document.body || document.documentElement).appendChild(a);
+  if (typeof a.click === "function") {
+    a.click();
+  } else {
+    a.target = "_blank";
+    a.dispatchEvent(
+      new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  }
+  webkitURL.revokeObjectURL(a.href);
 }
