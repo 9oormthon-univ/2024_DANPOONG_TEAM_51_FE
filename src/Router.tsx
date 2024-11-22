@@ -12,7 +12,7 @@ import ChattingPage from '@main/chat/chatting/ChattingPage';
 import VoiceCall from './page/voicecall/VoiceCall';
 
 import ComponentsTest from './page/component/ComponetsTest';
-import KakaoCallback from '@page/index/KakaoCallBack';
+import KakaoCallback from '@/page/index/KakaoCallback';
 
 const Router = () => {
   return (
@@ -26,9 +26,9 @@ const Router = () => {
             <Route path='index' element={<Index />} />
             <Route path='signup' element={<SignUp />} />
             <Route path='chatting/example' element={<ChattingPage />} />
-            <Route path="voice-call" element={<VoiceCall />} />
-            
-            <Route path="components-test" element={<ComponentsTest />} />
+            <Route path='voice-call' element={<VoiceCall />} />
+
+            <Route path='components-test' element={<ComponentsTest />} />
             <Route path='/oauth' element={<KakaoCallback />} />
           </Route>
         </Routes>
