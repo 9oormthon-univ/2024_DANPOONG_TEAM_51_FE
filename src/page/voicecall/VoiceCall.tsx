@@ -10,6 +10,11 @@ import ProfileWrapper from "./component/ProfileWrapper";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 
+interface SignalData {
+  sdp: RTCSessionDescription;
+  candidate: RTCIceCandidate;
+}
+
 const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
 const serverUri = import.meta.env.VITE_APP_BASE_URL;
 
@@ -26,6 +31,7 @@ const VoiceCall = () => {
   const [isMicOn, setIsMicOn] = useState(true)
 
   useEffect(() => {
+    // WebSocket 연결
     const socket = io(signalUri, {
       query: {roomId: 1 },
       withCredentials: true,
@@ -49,7 +55,65 @@ const VoiceCall = () => {
     
     console.log("socket: ", socketRef.current);
     console.log("peerConnection: ", pcRef.current);
+
+    // 소켓 리스너
+    // "offer" 받음
+    socket.on("offer", (data: SignalData) => {
+      console.log("Callee: received Offer from Caller.");
+      pc.setRemoteDescription(data.sdp).then(() => {
+        createAnswer();
+        setIsConnected(true);
+        console.log("Callee: record Started");
+      });
+    });
+
+    // answer 받음
+    socket.on("answer", (data: SignalData) => {
+      console.log("Caller: received Answer from Callee.");
+      if (!pc) {
+        return;
+      }
+      pc.setRemoteDescription(data.sdp);
+      setIsConnected(true);
+    });
+
+    // candidate 받음
+    socket.on("candidate", async (data: SignalData) => {
+      console.log("received candidate from Opposite.");
+      if (!pc) {
+        return;
+      }
+      await pc.addIceCandidate(data.candidate);
+      console.log("register candidate");
+    });
+
+    // peerconnection 리스너
+    // ICE로부터 candidate 받음
+    pc.onicecandidate = (event) => {
+      console.log("received candidate from ICE.");
+      if (!event.candidate) {
+        return;
+      }
+      socket.emit("candidate", {
+        candidate: event.candidate,
+      });
+      console.log("emit candidate");
+    };
+
+    // 상대방이 addTrack시 음성 데이터 수신
+    pc.ontrack = (event) => {
+      console.log("the Opposite registered the Track.");
+      if (remoteAudioRef.current) {
+        remoteAudioRef.current.srcObject = event.streams[0];
+      }
+    };
+
+    // 시그널링 상태 변화
+    pc.onsignalingstatechange = () => {
+      console.log("Signaling State Changed to : ", pc.signalingState);
+    };
   
+    // 사용자 오디오입력 데이터
     navigator.mediaDevices
       .getUserMedia({ video: false, audio: true })
       .then((stream) => {
@@ -68,12 +132,12 @@ const VoiceCall = () => {
       .catch(handleGUMError);
 
     return () => {
-      
+      pc.close();
     }
   }, [])
 
+  // 오디오입력장치가 없거나 권한 획득에 실패
   const handleGUMError = (error: DOMException) => {
-    /* getUserMedia 실패 */
     const errorMessage =
       "navigator.MediaDevices.getUserMedia error: " +
       error.message +
@@ -87,10 +151,35 @@ const VoiceCall = () => {
     }
   }
 
+  // offer 송신
   const Call = async () => {
     console.log("Caller: create offer");
     if (!(pcRef.current && socketRef.current)) return;
     setCallState("going");
+    try {
+      const sdp = await pcRef.current.createOffer();
+      pcRef.current.setLocalDescription(sdp);
+      socketRef.current.emit("offer", { sdp });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // answer 송신
+  const createAnswer = async () => {
+    console.log("Callee: create answer");
+    if (!(pcRef.current && socketRef.current)) {
+      return;
+    }
+    try {
+      if (pcRef.current.signalingState === "have-remote-offer") {
+        const sdp = await pcRef.current.createAnswer();
+        pcRef.current.setLocalDescription(sdp);
+        socketRef.current.emit("answer", { sdp });
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   /* BtnGroup 핸들러 */
@@ -105,7 +194,11 @@ const VoiceCall = () => {
   const handleEndCallClick = () => {
     console.log("End Call Clicekd"); 
     setCallState("after");
+    if (!pcRef.current) return;
+    pcRef.current.close();
     setIsConnected(false);
+
+    // TODO: 녹음 종료
   }
 
   return (<>
