@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Navigation from '@/page/component/navi/Navigation';
-import bannerImg from '@image/home/banner_mentor.png';
+import bannerMentorImg from '@image/home/banner_mentor.png';
+import bannerMenteeImg from '@image/home/banner_mentee.png';
 import mentoringProcessImg from '@image/home/mentoring-explain.png';
 import UserProfile from '@/page/main/home/component/UserProfile';
 import { getMentors } from '@/shared/api/home';
+import { getUserInfo } from '@/shared/api/user';
 
 interface UserList {
   name: string;
@@ -14,6 +16,11 @@ interface UserList {
 
 const Home = () => {
   const [userList, setUserList] = useState<UserList[]>([]);
+  const [isMentor, setIsMentor] = useState<boolean>(true);
+  const [profileText, setProfileText] = useState<string>(
+    '멘토링 신청을 할 수 있는 멘토들이에요'
+  );
+
   const handleHome = async () => {
     try {
       const response = await getMentors();
@@ -27,8 +34,24 @@ const Home = () => {
     }
   };
 
+  const handleUserInfo = async () => {
+    try {
+      const response = await getUserInfo();
+      setIsMentor(response.data.role === 'MENTOR');
+      if (isMentor == true) {
+        setProfileText('멘토링 신청을 할 수 있는 멘토들이에요');
+      } else {
+        setProfileText('멘토링은 어떻게 진행되나요?');
+      }
+      console.log(isMentor);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const iRunOnlyOnce = () => {
     handleHome();
+    handleUserInfo();
   };
   useEffect(iRunOnlyOnce, []);
 
@@ -37,11 +60,14 @@ const Home = () => {
       <St.HomeWrapper>
         <Navigation showLogo={true} />
         <St.BannerWrapper>
-          <img src={bannerImg} alt='profile' />
+          {isMentor ? (
+            <img src={bannerMentorImg} alt='profile' />
+          ) : (
+            <img src={bannerMenteeImg} alt='profile' />
+          )}
         </St.BannerWrapper>
-        <St.ProfileText>
-          {'멘토링 신청을 할 수 있는 멘토들이에요'}
-        </St.ProfileText>
+
+        <St.ProfileText>{profileText}</St.ProfileText>
         <St.ProfileListWrapper>
           {userList.map((data) => (
             <UserProfile name={data.name} keyword={data.keyword} />
