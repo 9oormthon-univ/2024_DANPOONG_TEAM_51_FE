@@ -69,7 +69,10 @@ const ChattingPage = () => {
     });
     socket.on('pre_offer', () => {
       console.log("got pre_offer");
-      navigate("/voice-call", {state: "preoffer"});
+      navigate("/voice-call", {state: { 
+        preoffer: true, 
+        // socket: socketRef.current,
+      } });
     })
     
     return () => {
@@ -95,14 +98,17 @@ const ChattingPage = () => {
     });
   };
 
-  const handleCall = () => {
+  const handleCall = ({}) => {
     console.log('handleCall');
-    socketRef.current?.emit("pre_offer");
-    navigate("/voice-call");
+    if(!socketRef.current) return;
+    socketRef.current.emit("pre_offer", {});
+    navigate("/voice-call", { state: { 
+      // socket: socketRef.current,
+    } });
   };
 
   // 전화 버튼 표시 조건 업데이트
-  const mentoringStartTime = '2024-11-24T02:40:00'; // 임시 시간 데이터
+  const mentoringStartTime = '2024-11-24T03:40:00'; // 임시 시간 데이터
   useEffect(() => {
     const updateCallButtonVisibility = () => {
       const currentTime = new Date();

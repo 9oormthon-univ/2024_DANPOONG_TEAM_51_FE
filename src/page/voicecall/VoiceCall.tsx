@@ -18,7 +18,8 @@ interface SignalData {
 }
 
 interface LocationStateData {
-  data: SignalData;
+  preoffer?: boolean;
+  // socket: Socket;
 }
 
 const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
@@ -51,6 +52,7 @@ const VoiceCall = () => {
 
     console.log(socketRef.current);
     socketRef.current = socket;
+    // socketRef.current = locationState.socket;
 
     // ICE 설정
     const iceConfig = {
@@ -65,16 +67,11 @@ const VoiceCall = () => {
     const pc = new RTCPeerConnection(iceConfig);
     pcRef.current = pc;
     
-    console.log("socket: ", socketRef.current);
-    console.log("peerConnection: ", pcRef.current);
-
-    // 소켓 리스너
-
-    if (locationState) {
+    if (locationState.preoffer) {
       // "pre_offer" 받음
       setCallState("before");
       console.log("locationState: ", locationState);
-      socket.on("offer", (data: SignalData) => {
+      socketRef.current.on("offer", (data: SignalData) => {
         pc.setRemoteDescription(data.sdp);
       })
     } else {
@@ -82,8 +79,13 @@ const VoiceCall = () => {
       setTimeout(Call, 500);
     }
 
+    console.log("socket: ", socketRef.current);
+    console.log("peerConnection: ", pcRef.current);
+
+    // 소켓 리스너
+
     // answer 받음
-    socket.on("answer", (data: SignalData) => {
+    socketRef.current.on("answer", (data: SignalData) => {
       console.log("Caller: received Answer from Callee.");
       if (!pc) {
         return;
@@ -96,7 +98,7 @@ const VoiceCall = () => {
     });
 
     // candidate 받음
-    socket.on("candidate", async (data: SignalData) => {
+    socketRef.current.on("candidate", async (data: SignalData) => {
       console.log("received candidate from Opposite.");
       if (!pc) {
         return;
@@ -109,10 +111,10 @@ const VoiceCall = () => {
     // ICE로부터 candidate 받음
     pc.onicecandidate = (event) => {
       console.log("received candidate from ICE.");
-      if (!event.candidate) {
+      if (!event.candidate || !socketRef.current ) {
         return;
       }
-      socket.emit("candidate", {
+      socketRef.current.emit("candidate", {
         candidate: event.candidate,
       });
       console.log("emit candidate");
@@ -196,6 +198,7 @@ const VoiceCall = () => {
       const sdp = await pcRef.current.createAnswer();
       pcRef.current.setLocalDescription(sdp);
       socketRef.current.emit("answer", { sdp });
+      setCallState("going");
       setIsConnected(true);
       timecountRef.current = timeCountStart();
       recorderRef.current?.startRecording();
