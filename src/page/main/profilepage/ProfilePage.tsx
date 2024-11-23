@@ -2,19 +2,44 @@ import Button from "@/page/component/button/Button";
 import Navigation from "@/page/component/navi/Navigation";
 import Notification from "@/page/component/Notification";
 import Profile from "@/page/component/Profile";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { postMentoring } from "@/shared/api/profile/index";
+import { getUserInfo } from "@/shared/api/user";
 
 const ProfilePage = () => {
   const [isMentor, setIsMentor] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false)
   const navigate = useNavigate();
+  let userId = 0;
+  let role = '';
 
+  const handleUserInfo = async () => {
+    try {
+      const response = await getUserInfo();
+      userId = response.data.id;
+      role = response.data.role;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleUserInfo();
+    setIsMentor(role==="MENTOR");
+  }, [])
+  
   const handleBack = () => {
     navigate(-1);
   }
   const handleSubmit = () => {
+    try {
+      const response = postMentoring({ mentorId: userId });
+      console.log(response);
+    } catch(error) {
+      console.log(error);
+    }
     setIsSubmitted(true);
   }
   const handleNext = () => {
