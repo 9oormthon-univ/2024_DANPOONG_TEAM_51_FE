@@ -36,7 +36,7 @@ const ChattingPage = () => {
     };
 
     updateCallButtonVisibility();
-    const intervalId = setInterval(updateCallButtonVisibility, 1000); // 체크
+    const intervalId = setInterval(updateCallButtonVisibility, 10000);
 
     return () => clearInterval(intervalId);
   }, [mentoringStartTime]);
