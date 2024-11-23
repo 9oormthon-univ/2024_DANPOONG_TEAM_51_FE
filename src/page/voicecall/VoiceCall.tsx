@@ -1,38 +1,285 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { VoiceCallStyle } from "@style/voicecall/VoiceCallStyle";
 import CalenderIcon from "@image/voicecall/calendar.svg?react"
 import Button from "@component/button/Button";
 import Profile from "@component/Profile";
 import BtnGroupVoiceCall from "./component/BtnGroupVoiceCall";
+import BtnGroupCallee from "./component/BtnGroupCallee";
 import Loader from "./component/Loader";
 import ProfileWrapper from "./component/ProfileWrapper";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { io, Socket } from "socket.io-client";
+import RecordRTC from "recordrtc";
+
+interface SignalData {
+  sdp: RTCSessionDescription;
+  candidate: RTCIceCandidate;
+}
+
+interface LocationStateData {
+  preoffer?: boolean;
+}
+
+const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
+const serverUri = import.meta.env.VITE_APP_BASE_URL;
 
 const VoiceCall = () => {
+  const socketRef = useRef<Socket>(); // socket 연결
+  const pcRef = useRef<RTCPeerConnection>(); // webRTC 연결
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null); // 내 오디오
+  const remoteAudioRef = useRef<HTMLAudioElement | null>(null); // 상대 오디오
+  const recorderRef = useRef<RecordRTC>(); // 통화녹음기
+  
   const navigate = useNavigate();
-  const [callState, setCallState] = useState<"before"|"going"|"after"|"error">("before");
+  const locationState = useLocation().state as LocationStateData;
+  const [callState, setCallState] = useState<"before"|"going"|"after"|"failure">("going");
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeakerphoneOn, setIsSpeakerphoneOn] = useState(false)
   const [isMicOn, setIsMicOn] = useState(true)
+  const timecountRef = useRef<NodeJS.Timeout>();
+  const [secondPassed, setSecondPassed] = useState(0)
 
+
+  useEffect(() => {
+    // WebSocket 연결
+    const socket = io(signalUri, {
+      query: {roomId: 3 },
+      withCredentials: true,
+    })
+
+    console.log(socketRef.current);
+    socketRef.current = socket;
+
+    // ICE 설정
+    const iceConfig = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:stun1.l.google.com:19302" },
+        { urls: "stun:stun2.l.google.com:19302" },
+        { urls: "stun:stun3.l.google.com:19302" },
+      ],
+    };
+
+    const pc = new RTCPeerConnection(iceConfig);
+    pcRef.current = pc;
+    
+    if (locationState.preoffer) {
+      // "pre_offer" 받음
+      setCallState("before");
+      console.log("locationState: ", locationState);
+      socketRef.current.on("offer", (data: SignalData) => {
+        pc.setRemoteDescription(data.sdp);
+      })
+    } else {
+      // '전화걸기'를 눌러 들어온 Caller는 0.5초 후 전화 발신
+      setTimeout(Call, 500);
+    }
+
+    console.log("socket: ", socketRef.current);
+    console.log("peerConnection: ", pcRef.current);
+
+    // 소켓 리스너
+
+    // answer 받음
+    socketRef.current.on("answer", (data: SignalData) => {
+      console.log("Caller: received Answer from Callee.");
+      if (!pc) {
+        return;
+      }
+      pc.setRemoteDescription(data.sdp);
+      setIsConnected(true);
+      timecountRef.current = timeCountStart();
+      recorderRef.current?.startRecording();
+      console.log("Caller: record Started");
+    });
+
+    // candidate 받음
+    socketRef.current.on("candidate", async (data: SignalData) => {
+      console.log("received candidate from Opposite.");
+      if (!pc) {
+        return;
+      }
+      await pc.addIceCandidate(data.candidate);
+      console.log("register candidate");
+    });
+
+    // peerconnection 리스너
+    // ICE로부터 candidate 받음
+    pc.onicecandidate = (event) => {
+      console.log("received candidate from ICE.");
+      if (!event.candidate || !socketRef.current ) {
+        return;
+      }
+      socketRef.current.emit("candidate", {
+        candidate: event.candidate,
+      });
+      console.log("emit candidate");
+    };
+
+    // 상대방이 addTrack시 음성 데이터 수신
+    pc.ontrack = (event) => {
+      console.log("the Opposite registered the Track.");
+      if (remoteAudioRef.current) {
+        remoteAudioRef.current.srcObject = event.streams[0];
+      }
+    };
+
+    // 시그널링 상태 변화
+    pc.onsignalingstatechange = () => {
+      console.log("Signaling State Changed to : ", pc.signalingState);
+    };
+  
+    // 사용자 오디오입력 데이터
+    navigator.mediaDevices
+      .getUserMedia({ video: false, audio: true })
+      .then((stream) => {
+        streamRef.current = stream;
+        const audioTracks = stream.getAudioTracks();
+        console.log("Got stream with audio device: " + audioTracks[0].label);
+        if (audioRef.current) {
+          // 오디오 스트림 등록
+          audioRef.current.srcObject = stream;
+        }
+        // peerconnection에 스트림 등록
+        audioTracks.forEach((track) => pcRef.current?.addTrack(track, stream));
+
+        // 각자 자신의 로컬스트림을 녹음
+        recorderRef.current = new RecordRTC(stream, {type: "audio"});
+      })
+      .catch(handleGUMError);
+
+    return () => {
+      pc.close();
+      clearInterval(timecountRef.current);
+    }
+  }, [])
+
+  // 오디오입력장치가 없거나 권한 획득에 실패
+  const handleGUMError = (error: DOMException) => {
+    const errorMessage =
+      "navigator.MediaDevices.getUserMedia error: " +
+      error.message +
+      " " +
+      error.name;
+    console.error(errorMessage);
+    if(error.name === "NotAllowedError"){
+      alert("멘토링 진행을 위해 마이크 사용 권한을 허용해주세요.")
+    } else {
+      alert("마이크 장치를 불러오지 못했습니다.")
+    }
+  }
+
+  // offer 송신
+  const Call = async () => {
+    console.log("Caller: create offer");
+    if (!(pcRef.current && socketRef.current)) return;
+    setCallState("going");
+    try {
+      const sdp = await pcRef.current.createOffer();
+      pcRef.current.setLocalDescription(sdp);
+      socketRef.current.emit("offer", { sdp });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // answer 송신
+  const Recieve = async () => {
+    console.log("Callee: create answer");
+    if (!(pcRef.current && socketRef.current)) {
+      setCallState("failure");
+      return;
+    }
+    try {
+      const sdp = await pcRef.current.createAnswer();
+      pcRef.current.setLocalDescription(sdp);
+      socketRef.current.emit("answer", { sdp });
+      setCallState("going");
+      setIsConnected(true);
+      timecountRef.current = timeCountStart();
+      recorderRef.current?.startRecording();
+      console.log("Callee: record Started");
+    } catch (e) {
+      console.error(e);
+      setCallState("failure");
+    }
+  }
+
+  const CancelCall = () => {
+    setCallState("failure");
+  }
+
+  const EndCall = () => {
+    setCallState("after");
+    if (!pcRef.current) return;
+    pcRef.current.close();
+    setIsConnected(false);
+    clearInterval(timecountRef.current);
+    console.log("timer cleared");
+    if(!recorderRef.current) return;
+    console.log("download record...");
+    recorderRef.current.stopRecording(() => {
+      const blob = recorderRef.current!.getBlob();
+      uploadRecord(blob);
+    });
+  }
+
+  const timeCountStart = () => {
+    const begin = Date.now();
+    console.log("timer started");
+    return setInterval(() => {
+      const seconds = Math.floor((Date.now() - begin) / 1000);
+      setSecondPassed(seconds);
+    }, 1000);
+  }
+
+  /* BtnGroup 핸들러 */
   const handleSpeakerphoneToggle = () => {
     console.log("toggle speakerphone"); 
+    navigator.mediaDevices.enumerateDevices().then((devices)=>{
+      const audioDevices = devices.filter(device => device.kind == "audioinput");
+      console.log(audioDevices);
+      // streamRef.current?.getAudioTracks().forEach((track) => {
+      //   track.stop();
+      // });
+      // const constraints: MediaStreamConstraints = {
+      //   video: false,
+      //   audio: {deviceId: audioDevices[isSpeakerphoneOn? 0 : 1].deviceId}
+      // }
+      // navigator.mediaDevices.getUserMedia(constraints).then((stream)=>{
+      //   streamRef.current = stream;
+      //   const audioTracks = stream.getAudioTracks();
+      //   console.log("Got stream with audio device: " + audioTracks[0].label);
+      //   if (audioRef.current) {
+      //     audioRef.current.srcObject = stream;
+      //   }
+      //   audioTracks.forEach((track) => pcRef.current?.addTrack(track, stream));
+      // });
+    })
     setIsSpeakerphoneOn(!isSpeakerphoneOn);
   }
   const handleMicToggle = () => {
+    if(!streamRef.current) return;
+    streamRef.current.getAudioTracks()[0].enabled = !isMicOn;
     console.log("toggle Mic"); 
     setIsMicOn(!isMicOn);
   }
   const handleEndCallClick = () => {
-    console.log("End Call Clicekd"); 
-    setCallState("after");
-    setIsConnected(false);
+    console.log("End Call Clicekd");
+    if (!isConnected) {
+      CancelCall();
+      return;
+    }
+    EndCall();
   }
 
   return (<>
-    <St.Wrapper $dark={callState !== "before"}>
-      {callState !== "before" && <Background/>}
+    <St.Wrapper>
+      <audio ref={audioRef} muted>{/* 내 오디오 */}</audio>
+      <audio ref={remoteAudioRef} autoPlay>{/* 상대방 오디오 */}</audio>
+      <Background/>
 
       <St.InfoWrapper>
         <ProfileWrapper
@@ -43,42 +290,38 @@ const VoiceCall = () => {
         {callState==="before" && <BeforeCall/>}
         {callState==="going" && <St.Info>
             { isConnected ? 
-              <TimeCounter secondsPassed={222} /> : "연결중"
+              <TimeCounter secondsPassed={secondPassed} /> : "연결중"
             }
           { !isConnected && <Loader/> }
         </St.Info>}
         {callState==="after" && <>
           <St.Heading>멘토링이 종료되었어요</St.Heading>
-          <St.Info><TimeCounter secondsPassed={601}/></St.Info>
+          <St.Info><TimeCounter secondsPassed={secondPassed}/></St.Info>
           </>}
-        {callState==="error" && <St.Heading>
+        {callState==="failure" && <St.Heading>
           전화 연결에 실패하였어요
           </St.Heading>}
       </St.InfoWrapper>
 
+      <St.ButtonWrapper>
       {/* 하단 버튼부 */}
-      {callState==="before" && <Button 
-          onClick={()=>{
-            setCallState("going");
-            setTimeout(() => {
-              setIsConnected(true);
-            }, 3000);
-            }}>
-            전화 연결하기
-        </Button>}
-      {callState==="going" && <BtnGroupVoiceCall
-          isConnected={isConnected}
-          isSpeakerphoneOn={isSpeakerphoneOn} 
-          onSpeakerphoneToggle={handleSpeakerphoneToggle}
-          isMicOn={isMicOn} 
-          onMicToggle={handleMicToggle}
-          onEndCallClick={handleEndCallClick}
-        />}
-      { (callState==="after" || callState==="error") && <Button
-          style={{isolation:"isolate",}}
-          onClick={()=>{navigate("/home")}}>
-            홈으로 가기
-        </Button>}
+        {callState==="before" && <BtnGroupCallee 
+            onReceive={Recieve}
+            onReject={CancelCall}
+            />}
+        {callState==="going" && <BtnGroupVoiceCall
+            isConnected={isConnected}
+            isSpeakerphoneOn={isSpeakerphoneOn} 
+            onSpeakerphoneToggle={handleSpeakerphoneToggle}
+            isMicOn={isMicOn} 
+            onMicToggle={handleMicToggle}
+            onEndCallClick={handleEndCallClick}
+          />}
+        { (callState==="after" || callState==="failure") && <Button
+            onClick={()=>{navigate("/home")}}>
+              홈으로 가기
+          </Button>}
+      </St.ButtonWrapper>
     </St.Wrapper>
   </>
   );
@@ -89,10 +332,12 @@ export default VoiceCall;
 
 const BeforeCall = () => {
   return (<>
-    <St.ScheduleBox><CalenderIcon/>00월 00일(일) 오후 00:00</St.ScheduleBox>
-    <St.Heading>
-      약속된 멘토링 시간이에요<br/>전화를 연결할까요?
-    </St.Heading>
+    <St.BeforeCall>
+      <St.ScheduleBox>
+        <CalenderIcon/>00월 00일(일) 오후 00:00
+      </St.ScheduleBox>
+        상대가 전화를 걸었어요<br/>정시에 맞춰 전화를 받아도 돼요
+    </St.BeforeCall>
   </>);
 }
 
@@ -120,11 +365,20 @@ const St = {
     isolation: isolate;
     align-items: center;
   `,
+  BeforeCall: styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 24px;
+    
+    ${({theme}) => theme.fonts.title_medium}
+  `,
   ScheduleBox: styled.div`
     display: flex;
     gap: 4px;
     border-radius: 2.4rem;
-    background-color: #663A0033;
+    background-color: #ffffff66;
     padding: 2.4rem;
     margin: 0 auto 0.4rem auto;
 
@@ -155,5 +409,31 @@ const St = {
     display: flex;
     flex-direction:column;
     gap: 1.6rem;
+  `,
+  ButtonWrapper: styled.div`
+    isolation: isolate;
   `
+}
+
+const uploadRecord = (blob: Blob) => {
+  const filename = `record-${Date().replace(/ /g, "-")}.webm`;
+
+  // TODO: DB 업로드 코드로 대체
+  const a = document.createElement("a");
+  a.href = webkitURL.createObjectURL(blob);
+  a.download = filename;
+  (document.body || document.documentElement).appendChild(a);
+  if (typeof a.click === "function") {
+    a.click();
+  } else {
+    a.target = "_blank";
+    a.dispatchEvent(
+      new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      })
+    );
+  }
+  webkitURL.revokeObjectURL(a.href);
 }
