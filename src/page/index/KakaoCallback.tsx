@@ -1,5 +1,3 @@
-// src/pages/KakaoCallback.tsx
-
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -12,7 +10,7 @@ const KakaoCallback = () => {
     const handleSocialLogin = async () => {
       try {
         const code = new URL(window.location.href).searchParams.get('code');
-        console.log(code);
+        console.log('Authorization Code:', code);
 
         if (!code) {
           console.error('Authorization code not found.');
@@ -23,7 +21,11 @@ const KakaoCallback = () => {
         const response = await postSocialLogin({ platformType, code });
         console.log('Login Success:', response);
 
-        navigate('/home');
+        if (response.role === 'GUEST') {
+          navigate('/signup');
+        } else {
+          navigate('/home');
+        }
       } catch (error) {
         console.error('Login Failed:', error);
       }
