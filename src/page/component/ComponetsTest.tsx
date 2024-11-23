@@ -6,6 +6,7 @@ import ButtonBig from './button/ButtonBig';
 import Profile from './Profile';
 import IconExample from '@image/tabBar/chat.svg?react'
 import { ProfileCardMentee, ProfileCardMento } from './ProfileCard';
+import Notification from './Notification';
 
 const Index = () => {
   return (
@@ -23,6 +24,9 @@ const Index = () => {
         <Profile size='2xl'/>
         <Profile size='xl'/>
       </St.BadgeSet>
+      <Notification variant='notice' subtitle='상대와 함께 자세한 내용을...'>멘토링이 확정되었어요</Notification>
+      <Notification>예약한 시간 10분전부터 전화가 가능해요</Notification>
+      <Notification variant='notice' LeftIcon={IconExample} subtitle='with custom Icon'>Notification</Notification>
       <ProfileCardMento 
         name='이름' keyword='키워드' profileSrc='https://avatars.githubusercontent.com/u/80196807?s=80&v=4'/>
       <ProfileCardMentee 

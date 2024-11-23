@@ -13,6 +13,7 @@ const hiddenPaths = [
   '/signup',
   '/voice-call',
   '/chatting/example',
+  '/chatting/book',
 ]; // 예시 path
 
 function App() {
