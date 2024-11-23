@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Navigation from '@page/component/navi/Navigation';
@@ -18,6 +18,28 @@ interface MessageData {
 const ChattingPage = () => {
   const [messages, setMessages] = React.useState<MessageData[]>([]);
   const [showCallButton, setShowCallButton] = useState(true);
+
+  const mentoringStartTime = '2024-11-23T17:41:00'; // 임시 시간 데이터
+
+  useEffect(() => {
+    const updateCallButtonVisibility = () => {
+      const currentTime = new Date();
+      const startTime = new Date(mentoringStartTime);
+      const tenMinutesBefore = new Date(startTime.getTime() - 10 * 60 * 1000); // 시작 10분 전
+      const oneHourAfter = new Date(startTime.getTime() + 60 * 60 * 1000); // 시작 1시간 후
+
+      if (currentTime >= tenMinutesBefore && currentTime <= oneHourAfter) {
+        setShowCallButton(true);
+      } else {
+        setShowCallButton(false);
+      }
+    };
+
+    updateCallButtonVisibility();
+    const intervalId = setInterval(updateCallButtonVisibility, 1000); // 체크
+
+    return () => clearInterval(intervalId);
+  }, [mentoringStartTime]);
 
   const handleCall = () => {
     console.log('handleCall');
