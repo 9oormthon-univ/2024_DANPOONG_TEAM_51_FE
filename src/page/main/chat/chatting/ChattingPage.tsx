@@ -25,7 +25,6 @@ const ChattingPage = () => {
   const [showCallButton, setShowCallButton] = useState(true);
   const navigate = useNavigate();
   let userId = 0;
-  const { roomId } = useParams<{ roomId: string }>();
 
   const handleUserInfo = async () => {
     try {
@@ -46,15 +45,16 @@ const ChattingPage = () => {
   // Socket 연결
   useEffect(() => {
     const socket = io(signalUri, {
-      query: { roomId: roomId },
+      query: { roomId: 1 },
       withCredentials: true,
     });
     socketRef.current = socket;
-
+    console.log('asdf');
     // 메시지 수신 처리
     socket.on('message', (data) => {
       const isUserMessage = data.senderId === userId;
       const nowTime = new Date();
+      console.log(data);
       const formattedMessage: MessageData = {
         text: data.content,
         sender: isUserMessage ? 'user' : 'other',

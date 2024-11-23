@@ -27,7 +27,7 @@ const Router = () => {
             <Route path='mypage' element={<MyPage />} />
             <Route path='index' element={<Index />} />
             <Route path='signup' element={<SignUp />} />
-            <Route path='/chat/room/:roomId' element={<ChattingPage />} />
+            <Route path='/chatting/example' element={<ChattingPage />} />
             <Route path='chatting/book' element={<Book />} />
             <Route path='voice-call' element={<VoiceCall />} />
             <Route path='profile' element={<ProfilePage />} />

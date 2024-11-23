@@ -63,7 +63,7 @@ const Chat = () => {
 
   const handleCardClick = (roomId: string) => {
     console.log(`Room ID clicked: ${roomId}`);
-    navigate(`/chat/room/${roomId}`);
+    navigate(`/chatting/example`);
   };
 
   return (
