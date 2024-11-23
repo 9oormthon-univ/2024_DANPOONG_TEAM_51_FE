@@ -27,8 +27,8 @@ const Index = () => {
         name='이름' keyword='키워드' profileSrc='https://avatars.githubusercontent.com/u/80196807?s=80&v=4'/>
       <ProfileCardMentee 
         name='이름' keyword='키워드' mentoringTitle='제목'/>
-      <ButtonBig leftIcon={IconExample} subtitle='예시 설명'>Title</ButtonBig>
-      <ButtonBig variant="secondary" leftIcon={IconExample} subtitle='예시 설명'>Title</ButtonBig>
+      <ButtonBig LeftIcon={IconExample} subtitle='예시 설명'>Title</ButtonBig>
+      <ButtonBig variant="secondary" LeftIcon={IconExample} subtitle='예시 설명'>Title</ButtonBig>
       <ButtonBig rightIcon={false} disabled>예정된 멘토링이 없어요</ButtonBig>
       <ButtonBig >Title</ButtonBig>
       <ButtonBig subtitle='예시 설명'>Title</ButtonBig>
