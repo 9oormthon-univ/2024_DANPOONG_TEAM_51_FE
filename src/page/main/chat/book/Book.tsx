@@ -4,6 +4,7 @@ import moment from "moment";
 import { useState } from "react";
 import Calendar from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 type ValuePiece = Date | null;
@@ -11,39 +12,86 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 
 const Book = () => {
   const today = new Date();
-  const [date, setDate] = useState<Value>(today);
+  const [date, setDate] = useState<Date>(today);
+  const [time, setTime] = useState(`${today.getHours()}:${today.getMinutes()}`);
+  const [dateTime, setDateTime] = useState(today);
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const navigate = useNavigate();
 
   const handleDateChange = (newDate: Value) => {
+    if( Array.isArray(newDate) ){
+      newDate = newDate[0]
+    }
+    if (!newDate) return;
     setDate(newDate);
+    setDateTime(joinDateTime(newDate, time));
   };
+  const handleTimeChange = (e:any) => {
+    const newTime = e.target.value;
+    setTime(newTime);
+    setDateTime(joinDateTime(date, newTime));
+  };
+  const joinDateTime = (date: Date, time: string) : Date => {
+    let minutes = 0;
+    time.split(":").map((e, i) => {
+      i===0 ? 
+        minutes = (Number(e) * 60) // hh 
+        : minutes += Number(e) // mm
+        ;
+    })
+    return moment(date).add(minutes, "m").toDate();
+  }
+
+  const handleBook = () => {
+    console.log("handleBook: set mentoring datetime to ", moment(dateTime).format("YYMMDD-hh:mm"));
+    setIsSubmitted(true);
+  }
+
+  const handleBack = () => {
+    navigate(-1);
+  }
+
 
   return (
     <St.Wrapper>
-      <Navigation
+      { !isSubmitted && <Navigation
         title='멘토링 시간 예약하기'
         showBackButton
-        onBackClick={() => console.log('뒤로가기')}
-
-      />
-      <St.ContentWrapper>
-        <St.BookWrapper>
-          <St.Heading>멘토링 일시 선택</St.Heading>
-          <St.CalendarWrapper>
-            <Calendar
-            value={date}
-            onChange={handleDateChange}
-            calendarType="gregory"
-            formatDay={(locale, date) => moment(date).format("D")}
-            next2Label={null} // 연도 이동 버튼 숨기기
-            prev2Label={null}
-            minDetail="year" // 10년씩 선택 숨기기
-            />
-            <St.TimePicker/>
-          </St.CalendarWrapper>
-          <p>{date?.toString()}</p>
-        </St.BookWrapper>
-        <Button>멘토링 시간 예약하기</Button>
-      </St.ContentWrapper>
+        onBackClick={handleBack}
+      />}
+      { isSubmitted ? 
+        <St.ContentWrapper>
+          <St.Dummy/>
+          <St.BookWrapper>
+            <St.HeadingXL>시간 예약이<br/>완료되었습니다.</St.HeadingXL>
+          </St.BookWrapper>
+          <Button onClick={handleBack}>채팅방으로 돌아가기</Button>
+        </St.ContentWrapper>
+      : 
+        <St.ContentWrapper>
+          <St.BookWrapper>
+            <St.Heading>멘토링 일시 선택</St.Heading>
+            <St.CalendarWrapper>
+              <Calendar
+              value={date}
+              onChange={handleDateChange}
+              calendarType="gregory"
+              formatDay={(locale, date) => moment(date).format("D")}
+              next2Label={null} // 연도 이동 버튼 숨기기
+              prev2Label={null}
+              minDetail="year" // 10년씩 선택 숨기기
+              minDate={new Date()}
+              />
+              <St.TimePicker
+              value={time}
+              onChange={handleTimeChange}
+              />
+            </St.CalendarWrapper>
+            <p>{dateTime?.toString()}</p>
+          </St.BookWrapper>
+          <Button onClick={handleBook}>멘토링 시간 예약하기</Button>
+        </St.ContentWrapper>
+      }
   </St.Wrapper>
   );
 }
@@ -65,12 +113,20 @@ const St = {
     margin: 0 auto;
     max-width: 360px;
     height: 100%;
+    width: 100%;
   `,
   BookWrapper: styled.div`
   `,
   Heading: styled.div`
     ${({theme})=> theme.fonts.title_medium};
     `,
+  HeadingXL: styled.div`
+    ${({theme})=> theme.fonts.title_extralarge};
+    text-align: center;
+    `,
+  Dummy: styled.div`
+    visibility: hidden;
+  `,
   TimePicker: styled.input.attrs({type: "time"})`
     padding: 0.8rem 1.2rem;
     border-radius: 1rem;
