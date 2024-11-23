@@ -23,7 +23,11 @@ const Home = () => {
           <img src={mentoringProcessImg} alt='mentoringProcess' />
         </St.MentoringProcessWrapper>
         <St.MentoringProcessDescription>
-          {'안녕하세요 안녕 안녕...'}
+          {`ㆍ멘토 심사가 승인된 멘토만 멘토링을 진행할 수 있어요.
+ㆍ멘티는 배우고 싶은 소프트 스킬을 가진 멘토에게 멘토링을 요청할 수 있어요.
+ㆍ멘토는 멘티의 프로필을 보고 멘티의 멘토링을 수락하거나 거절할 수 있어요.
+ㆍ멘토링 후 요약본이 도착하는 시간은 멘토링 진행 시간에 따라 달라지며,
+   일반적으로는 약 4시간 정도 걸려요.`}
         </St.MentoringProcessDescription>
       </St.HomeWrapper>
     </>
@@ -64,7 +68,7 @@ const St = {
     display: flex;
     ${({ theme }) => theme.fonts.title_medium};
     color: ${({ theme }) => theme.colors.gray700};
-    margin: 32px 20px;
+    margin: 32px 20px 0px 20px;
   `,
 
   MentoringProcessWrapper: styled.div`
@@ -83,6 +87,7 @@ const St = {
     ${({ theme }) => theme.fonts.caption};
     color: ${({ theme }) => theme.colors.gray500};
     margin: 16px 20px;
+    white-space: break-spaces;
   `,
 };
 

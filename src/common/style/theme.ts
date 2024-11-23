@@ -111,7 +111,7 @@ const fonts = {
   `,
   caption: css`
     font-family: 'Pretendard';
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 400;
     line-height: 20px;
   `,
