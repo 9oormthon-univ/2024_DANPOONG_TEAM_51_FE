@@ -6,6 +6,7 @@ import FileButton from '@image/chatting/fileIcon.svg?react';
 import CalendarButton from '@image/chatting/calendarIcon.svg?react';
 import SendButton from '@image/chatting/sendButton.svg?react';
 import ActivationSendButton from '@image/chatting/activationSendButton.svg?react';
+import { useNavigate } from 'react-router-dom';
 
 interface ChattingMessageInputProps {
   onSendMessage: (message: string) => void;
@@ -13,6 +14,7 @@ interface ChattingMessageInputProps {
 
 const ChattingMessageInput = ({ onSendMessage }: ChattingMessageInputProps) => {
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleMessageSend = () => {
     if (message.trim()) {
@@ -21,12 +23,16 @@ const ChattingMessageInput = ({ onSendMessage }: ChattingMessageInputProps) => {
     }
   };
 
+  const handleBookMentoring = () => {
+    navigate("/chatting/book");
+  }
+
   return (
     <St.InputWrapper>
       <St.ButtonBoxWrapper>
         <AlbumButton />
         <FileButton />
-        <CalendarButton />
+        <CalendarButton onClick={handleBookMentoring} />
       </St.ButtonBoxWrapper>
       <St.Input
         type='text'
@@ -63,6 +69,7 @@ const St = {
     padding-right: 8px;
     justify-content: space-between;
     align-items: center;
+    cursor: pointer;
   `,
 
   ButtonIcon: styled.button`

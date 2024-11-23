@@ -49,3 +49,6 @@ sketch
 .env.development.local
 .env.test.local
 .env.production.local
+
+localhost.pem
+localhost-key.pem

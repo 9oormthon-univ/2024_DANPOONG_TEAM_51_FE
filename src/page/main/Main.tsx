@@ -17,8 +17,8 @@ const St = {
     position: fixed;
     bottom: 0;
     transform: translateX(-50%);
-    z-index: 1000; 
+    z-index: 1000;
   `,
-}
+};
 
 export default Main;
