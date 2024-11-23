@@ -7,7 +7,13 @@ import { useLocation, Outlet } from 'react-router-dom';
 
 import TabBar from './page/main/component/TabBar';
 
-const hiddenPaths = ['/index', '/login', '/signup', '/voice-call', '/chatting/example']; // 예시 path
+const hiddenPaths = [
+  '/index',
+  '/login',
+  '/signup',
+  '/voice-call',
+  '/chatting/example',
+]; // 예시 path
 
 function App() {
   const { pathname } = useLocation();
@@ -41,12 +47,12 @@ function App() {
       <GlobalStyle />
       <St.AppWrapper $isTabBar={!hiddenPaths.includes(pathname)}>
         <Outlet />
+        {!hiddenPaths.includes(pathname) && (
+          <St.TabBarWrapper>
+            <TabBar />
+          </St.TabBarWrapper>
+        )}
       </St.AppWrapper>
-      {!hiddenPaths.includes(pathname) && (
-        <St.TabBarWrapper>
-          <TabBar />
-        </St.TabBarWrapper>
-      )}
     </ThemeProvider>
   );
 }
@@ -71,7 +77,8 @@ const St = {
   AppWrapper: styled.div<{ $isTabBar: boolean }>`
     max-width: var(--app-max-width);
     width: 100%;
-    height: ${(props) => (props.$isTabBar ? `calc(100vh - 95px)` : `100vh`)};
+    height: 100%;
+    // height: ${(props) => (props.$isTabBar ? `calc(100vh - 95px)` : `100vh`)};
 
     position: absolute;
     transform: translateX(-50%);

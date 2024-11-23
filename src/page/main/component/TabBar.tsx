@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-import ChatIcon from '../../../common/asset/image/tabBar/chat.svg'
+import ChatIcon from '../../../common/asset/image/tabBar/chat.svg';
 import HomeIcon from '../../../common/asset/image/tabBar/home.svg';
 import Mypage from '../../../common/asset/image/tabBar/mypage.svg';
 import SelectedChat from '../../../common/asset/image/tabBar/selectedChat.svg';
@@ -24,17 +24,13 @@ const Tab = ({
   isSelected,
   onClick,
   icon,
-  selectedIcon
+  selectedIcon,
 }: TabProps) => {
-
   return (
-    <St.TabButton
-      $isSelected={isSelected}
-      onClick={() => onClick(index)}
-    >
+    <St.TabButton $isSelected={isSelected} onClick={() => onClick(index)}>
       <St.TabIcon>
-        <img src={isSelected ? selectedIcon : icon} alt = {`${label} icon`} />
-      </St.TabIcon> 
+        <img src={isSelected ? selectedIcon : icon} alt={`${label} icon`} />
+      </St.TabIcon>
       <span>{label}</span>
     </St.TabButton>
   );
@@ -45,10 +41,20 @@ const TabBar = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const tabs = [
-    { label: '채팅', icon: ChatIcon, selectedIcon: SelectedChat, path: '/chat' },
+    {
+      label: '채팅',
+      icon: ChatIcon,
+      selectedIcon: SelectedChat,
+      path: '/chat',
+    },
     { label: '홈', icon: HomeIcon, selectedIcon: SelectedHome, path: '/home' },
-    { label: '마이페이지', icon: Mypage, selectedIcon: SelectedMypage, path: '/mypage' },
-  ]
+    {
+      label: '마이페이지',
+      icon: Mypage,
+      selectedIcon: SelectedMypage,
+      path: '/mypage',
+    },
+  ];
 
   const handleTabClick = (index: number, path: string) => {
     setSelectedTab(index);
@@ -77,8 +83,7 @@ export default TabBar;
 const St = {
   TabContainer: styled.div`
     display: flex;
-    background: ${({ theme }) => theme.colors.white };
-    border-top: 1px solid ${({ theme }) => theme.colors.gray200 };
+    border-top: 1px solid ${({ theme }) => theme.colors.gray200};
   `,
 
   TabButton: styled.button<{ $isSelected: boolean }>`
@@ -86,14 +91,14 @@ const St = {
     padding: 10px 20px;
     cursor: pointer;
     border: none;
-    color: ${({ theme }) => theme.colors.gray400 };
-    ${({ theme }) => theme.fonts.body_medium };
-    background: ${({ theme }) => theme.colors.gray100 };
+    color: ${({ theme }) => theme.colors.gray400};
+    ${({ theme }) => theme.fonts.body_medium};
+    background-color: rgba(255, 255, 255, 0.5);
   `,
 
   TabIcon: styled.div`
     width: 92px;
     height: 24px;
     margin-bottom: 6px;
-  `
+  `,
 };
