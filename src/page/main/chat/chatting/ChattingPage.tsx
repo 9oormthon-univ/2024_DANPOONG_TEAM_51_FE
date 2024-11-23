@@ -8,6 +8,7 @@ import ChattingMessageInput from './component/ChattingMessageInput';
 import CallDescription from '@image/chatting/CallDescription.svg?react';
 import CallButton from '@image/chatting/call-button.svg?react';
 import { getChattingMessage } from '@/shared/api/chatting';
+import { getUserInfo } from '@/shared/api/user';
 
 interface MessageData {
   text: string;
@@ -19,23 +20,39 @@ interface MessageData {
 const ChattingPage = () => {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [showCallButton, setShowCallButton] = useState(true);
+  let userId = 0;
 
+  const handleUserInfo = async () => {
+    try {
+      const response = await getUserInfo();
+      userId = response.data.id;
+      console.log('userId', response);
+      console.log('제발', userId);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  handleUserInfo();
   const socketRef = useRef<Socket | null>(null);
 
-  const previousMessages = getChattingMessage({ id: '1' });
-  console.log(previousMessages);
+  // const previousMessages = getChattingMessage({ id: '2' });
+  // console.log(previousMessages);
 
   // Socket 연결
   useEffect(() => {
     const socket = io(`${import.meta.env.VITE_SOCKET_BASE_URL}`, {
-      query: { roomId: 1 },
+      query: { roomId: 2 },
       withCredentials: true,
     });
     socketRef.current = socket;
 
     // 메시지 수신 처리
-    socket.on('message', (data: { senderId: string; content: string }) => {
-      const isUserMessage = data.senderId === 'user_id'; // 사용자의 ID와 비교
+    socket.on('message', (data) => {
+      console.log('daaaa', data);
+      const isUserMessage = data.senderId === userId;
+      console.log('asdfadfadfadsfadsf', data.senderId, isUserMessage);
+      console.log(data);
       const formattedMessage: MessageData = {
         text: data.content,
         sender: isUserMessage ? 'user' : 'other',
@@ -60,11 +77,11 @@ const ChattingPage = () => {
       date: new Date().toLocaleDateString(),
     };
 
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    // setMessages((prevMessages) => [...prevMessages, newMessage]);
 
     // 서버로 메시지 전송
     socketRef.current?.emit('message', {
-      senderId: 'user_id', // 실제 사용자의 ID로 대체
+      senderId: userId,
       content: text,
     });
   };
