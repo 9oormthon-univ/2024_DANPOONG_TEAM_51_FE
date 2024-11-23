@@ -19,8 +19,8 @@ const SignUp = () => {
       }
 
       const response = await postOnboarding({ role });
-      console.log(response);
       console.log(`role=${selectedRole}`);
+      console.log(response);
       navigate('/home');
     } catch (error) {
       console.error('failed', error);

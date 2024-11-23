@@ -64,10 +64,12 @@ const Navigation = ({
 
 const St = {
   NavigationWrapper: styled.div`
-    width: 100%;
+    width: 393px;
     height: 108px;
     border-bottom: 1px solid ${({ theme }) => theme.colors.gray300};
     background-color: rgba(255, 255, 255, 0.5);
+    margin: 0 auto;
+    position: fixed;
   `,
 
   NavigationBox: styled.div`
