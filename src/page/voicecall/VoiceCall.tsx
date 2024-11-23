@@ -45,7 +45,7 @@ const VoiceCall = () => {
   useEffect(() => {
     // WebSocket 연결
     const socket = io(signalUri, {
-      query: {roomId: 1 },
+      query: {roomId: 3 },
       withCredentials: true,
     })
 
