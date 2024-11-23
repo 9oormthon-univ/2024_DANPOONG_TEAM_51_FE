@@ -36,7 +36,7 @@ const ChattingPage = () => {
   // Socket 연결
   useEffect(() => {
     const socket = io(`${import.meta.env.VITE_SOCKET_BASE_URL}`, {
-      query: { roomId: 2 },
+      query: { roomId: 3 },
       withCredentials: true,
     });
     socketRef.current = socket;

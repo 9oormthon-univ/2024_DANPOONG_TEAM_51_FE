@@ -41,9 +41,8 @@ const St = {
 
   BannerWrapper: styled.div`
     width: 100%;
-    max-width: 393px;
     display: flex;
-    // width: 393px;
+    width: 393px;
     height: 128px;
     margin-top: 108px;
   `,
