@@ -7,7 +7,13 @@ import { useLocation, Outlet } from 'react-router-dom';
 
 import TabBar from './page/main/component/TabBar';
 
-const hiddenPaths = ['/index', '/login', '/signup', '/voice-call', '/chatting/example']; // 예시 path
+const hiddenPaths = [
+  '/index',
+  '/login',
+  '/signup',
+  '/voice-call',
+  '/chatting/example',
+];
 
 function App() {
   const { pathname } = useLocation();
