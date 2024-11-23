@@ -64,14 +64,14 @@ const ChattingPage = () => {
         date: new Date().toLocaleDateString(),
       };
 
-      socket.on('preoffer', () => {
-        console.log("got preoffer");
-        navigate("/voice-call", {state: "preoffer"});
-      })
-
+      
       setMessages((prevMessages) => [...prevMessages, formattedMessage]);
     });
-
+    socket.on('preoffer', () => {
+      console.log("got preoffer");
+      navigate("/voice-call", {state: "preoffer"});
+    })
+    
     return () => {
       socket.disconnect();
     };
