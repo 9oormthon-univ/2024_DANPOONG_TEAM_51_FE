@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { io, Socket } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
@@ -80,12 +80,12 @@ const ChattingPage = () => {
 
   // 메시지 전송
   const handleSendMessage = (text: string) => {
-    const newMessage: MessageData = {
-      text,
-      sender: 'user',
-      time: new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString(),
-    };
+    // const newMessage: MessageData = {
+    //   text,
+    //   sender: 'user',
+    //   time: new Date().toLocaleTimeString(),
+    //   date: new Date().toLocaleDateString(),
+    // };
 
     // 서버로 메시지 전송
     socketRef.current?.emit('message', {
