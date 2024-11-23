@@ -30,7 +30,11 @@ const ChattingPage = () => {
     }
   };
 
-  handleUserInfo();
+  const iRunOnlyOnce = () => {
+    handleUserInfo();
+  };
+  useEffect(iRunOnlyOnce, []);
+
   const socketRef = useRef<Socket | null>(null);
 
   // Socket 연결

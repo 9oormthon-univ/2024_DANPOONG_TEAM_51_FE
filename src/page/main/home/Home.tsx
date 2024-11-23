@@ -1,30 +1,37 @@
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Navigation from '@/page/component/navi/Navigation';
 import bannerImg from '@image/home/banner_mentor.png';
 import mentoringProcessImg from '@image/home/mentoring-explain.png';
 import UserProfile from '@/page/main/home/component/UserProfile';
+import { getMentors } from '@/shared/api/home';
 
-const mentors = [
-  {
-    name: '권정',
-    keyword: '채팅만듬',
-  },
-  {
-    name: '김성은',
-    keyword: '채팅만듬',
-  },
-  {
-    name: '김성은',
-    keyword: '채팅만듬',
-  },
-  {
-    name: '김성은',
-    keyword: '채팅만듬',
-  },
-];
+interface UserList {
+  name: string;
+  keyword: string;
+}
 
 const Home = () => {
+  const [userList, setUserList] = useState<UserList[]>([]);
+  const handleHome = async () => {
+    try {
+      const response = await getMentors();
+      const user = response.data.map((mentor) => ({
+        name: mentor.name,
+        keyword: (mentor.keyword || []).join(', '),
+      }));
+      setUserList(user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const iRunOnlyOnce = () => {
+    handleHome();
+  };
+  useEffect(iRunOnlyOnce, []);
+
   return (
     <>
       <St.HomeWrapper>
@@ -36,7 +43,7 @@ const Home = () => {
           {'멘토링 신청을 할 수 있는 멘토들이에요'}
         </St.ProfileText>
         <St.ProfileListWrapper>
-          {mentors.map((data) => (
+          {userList.map((data) => (
             <UserProfile name={data.name} keyword={data.keyword} />
           ))}
         </St.ProfileListWrapper>
