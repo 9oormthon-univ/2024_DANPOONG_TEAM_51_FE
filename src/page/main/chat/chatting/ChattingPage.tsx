@@ -1,9 +1,12 @@
 import React from 'react';
+import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import Navigation from '@page/component/navi/Navigation';
 import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
+import CallDescription from '@image/chatting/CallDescription.svg?react';
+import CallButton from '@image/chatting/call-button.svg?react';
 
 interface MessageData {
   text: string;
@@ -14,6 +17,33 @@ interface MessageData {
 
 const ChattingPage = () => {
   const [messages, setMessages] = React.useState<MessageData[]>([]);
+  const [showCallButton, setShowCallButton] = useState(true);
+
+  const mentoringStartTime = '2024-11-23T17:41:00'; // 임시 시간 데이터
+
+  useEffect(() => {
+    const updateCallButtonVisibility = () => {
+      const currentTime = new Date();
+      const startTime = new Date(mentoringStartTime);
+      const tenMinutesBefore = new Date(startTime.getTime() - 10 * 60 * 1000); // 시작 10분 전
+      const oneHourAfter = new Date(startTime.getTime() + 60 * 60 * 1000); // 시작 1시간 후
+
+      if (currentTime >= tenMinutesBefore && currentTime <= oneHourAfter) {
+        setShowCallButton(true);
+      } else {
+        setShowCallButton(false);
+      }
+    };
+
+    updateCallButtonVisibility();
+    const intervalId = setInterval(updateCallButtonVisibility, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [mentoringStartTime]);
+
+  const handleCall = () => {
+    console.log('handleCall');
+  };
 
   const handleSendMessage = (text: string) => {
     setMessages([
@@ -48,6 +78,12 @@ const ChattingPage = () => {
         label='멘토'
         onBackClick={() => console.log('뒤로가기')}
       />
+      {showCallButton && (
+        <St.CallBoxWrapper>
+          <CallDescription />
+          <CallButton onClick={() => handleCall()} />
+        </St.CallBoxWrapper>
+      )}
       <St.ChattingWrapper>
         <Chatting messages={messages} />
       </St.ChattingWrapper>
@@ -91,6 +127,23 @@ const St = {
     max-width: var(--app-max-width);
     z-index: 1000;
     background-color: rgba(255, 255, 255, 0.5);
+  `,
+
+  CallBoxWrapper: styled.div`
+    position: fixed;
+    display: flex;
+    margin: 122px 20px 0px 20px;
+  `,
+
+  CallDescription: styled.div`
+    padding-left: 20px;
+  `,
+
+  CallButton: styled.button`
+    margin-right: 0px;
+    svg {
+      cursor: pointer;
+    }
   `,
 };
 

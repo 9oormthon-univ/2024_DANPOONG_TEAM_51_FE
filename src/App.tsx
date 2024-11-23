@@ -77,6 +77,7 @@ const St = {
   AppWrapper: styled.div<{ $isTabBar: boolean }>`
     max-width: var(--app-max-width);
     width: 100%;
+    // height: 100%;
     height: ${(props) => (props.$isTabBar ? `calc(100vh - 95px)` : `100vh`)};
 
     position: absolute;
