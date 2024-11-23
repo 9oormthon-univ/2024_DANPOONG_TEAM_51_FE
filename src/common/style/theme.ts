@@ -34,7 +34,7 @@ const colors = {
 const gradients = {
   pinktoyellow: 'linear-gradient(to right, #FDD5F2, #FBE7CE 70%)',
   yellowtopink: 'linear-gradient(to right, #FBE7CE 50%, #FDD5F2)',
-}
+};
 
 const fonts = {
   display_large: css`
@@ -91,11 +91,23 @@ const fonts = {
     font-weight: 400;
     line-height: 16px;
   `,
-  chatting_medium: css`
+  chat_medium: css`
     font-family: 'Pretendard';
     font-size: 1.4rem;
     font-weight: 500;
     line-height: 16px;
+  `,
+  label_small: css`
+    font-family: 'Pretendard';
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 12px;
+  `,
+  title_extrasmall: css`
+    font-family: 'Pretendard';
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 14px;
   `,
 };
 

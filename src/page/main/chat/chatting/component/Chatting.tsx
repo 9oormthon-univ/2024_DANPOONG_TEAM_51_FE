@@ -95,7 +95,7 @@ const DateLabel = styled.div`
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray200};
   padding: 4px 8px;
-  ${({ theme }) => theme.fonts.body_small};
+  ${({ theme }) => theme.fonts.title_extralarge};
   max-width: fit-content;
 `;
 
@@ -111,7 +111,7 @@ const MessageWrapper = styled.div<{ $isUser: boolean }>`
     $isUser ? theme.colors.orange40 : theme.colors.white};
   color: ${({ theme, $isUser }) =>
     $isUser ? theme.colors.white : theme.colors.gray700};
-  ${({ theme }) => theme.fonts.chatting_medium};
+  ${({ theme }) => theme.fonts.chat_medium};
   padding: 8px 12px;
   max-width: 70%;
   word-break: break-word;
@@ -122,7 +122,7 @@ const MessageWrapper = styled.div<{ $isUser: boolean }>`
 `;
 
 const TimeLabel = styled.div<{ $isUser: boolean }>`
-  ${({ theme }) => theme.fonts.body_small};
+  ${({ theme }) => theme.fonts.label_small};
   color: ${({ theme }) => theme.colors.gray400};
   margin: ${({ $isUser }) => ($isUser ? '0 8px 0 0' : '0 0 0 8px')};
   align-self: flex-end;
