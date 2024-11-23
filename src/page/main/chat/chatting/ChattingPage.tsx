@@ -7,6 +7,7 @@ import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import CallDescription from '@image/chatting/CallDescription.svg?react';
 import CallButton from '@image/chatting/call-button.svg?react';
+import { getChattingMessage } from '@/shared/api/chatting';
 
 interface MessageData {
   text: string;
@@ -20,6 +21,9 @@ const ChattingPage = () => {
   const [showCallButton, setShowCallButton] = useState(true);
 
   const socketRef = useRef<Socket | null>(null);
+
+  const previousMessages = getChattingMessage({ id: '1' });
+  console.log(previousMessages);
 
   // Socket 연결
   useEffect(() => {
