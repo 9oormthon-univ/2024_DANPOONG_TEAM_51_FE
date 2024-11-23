@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import io, { Socket } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 import Navigation from '@page/component/navi/Navigation';
 import Chatting from './component/Chatting';
@@ -17,9 +18,12 @@ interface MessageData {
   date: string;
 }
 
+const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
+
 const ChattingPage = () => {
   const [messages, setMessages] = useState<MessageData[]>([]);
   const [showCallButton, setShowCallButton] = useState(true);
+  const navigate = useNavigate();
   let userId = 0;
 
   const handleUserInfo = async () => {
@@ -41,8 +45,8 @@ const ChattingPage = () => {
 
   // Socket 연결
   useEffect(() => {
-    const socket = io(`${import.meta.env.VITE_SOCKET_BASE_URL}`, {
-      query: { roomId: 2 },
+    const socket = io(signalUri, {
+      query: { roomId: 3 },
       withCredentials: true,
     });
     socketRef.current = socket;
@@ -60,9 +64,16 @@ const ChattingPage = () => {
         date: new Date().toLocaleDateString(),
       };
 
+      
       setMessages((prevMessages) => [...prevMessages, formattedMessage]);
     });
-
+    socket.on('pre_offer', () => {
+      console.log("got pre_offer");
+      navigate("/voice-call", {state: { 
+        preoffer: true,
+      } });
+    })
+    
     return () => {
       socket.disconnect();
     };
@@ -86,8 +97,15 @@ const ChattingPage = () => {
     });
   };
 
+  const handleCall = ({}) => {
+    console.log('handleCall');
+    if(!socketRef.current) return;
+    socketRef.current.emit("pre_offer", {});
+    navigate("/voice-call", { state: {} });
+  };
+
   // 전화 버튼 표시 조건 업데이트
-  const mentoringStartTime = '2024-11-23T17:41:00'; // 임시 시간 데이터
+  const mentoringStartTime = '2024-11-24T03:40:00'; // 임시 시간 데이터
   useEffect(() => {
     const updateCallButtonVisibility = () => {
       const currentTime = new Date();
@@ -117,7 +135,7 @@ const ChattingPage = () => {
       {showCallButton && (
         <St.CallBoxWrapper>
           <CallDescription />
-          <CallButton onClick={() => console.log('handleCall')} />
+          <CallButton onClick={handleCall} />
         </St.CallBoxWrapper>
       )}
       <St.ChattingWrapper>
