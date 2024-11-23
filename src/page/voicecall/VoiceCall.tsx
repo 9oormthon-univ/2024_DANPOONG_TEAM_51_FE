@@ -71,13 +71,15 @@ const VoiceCall = () => {
     // 소켓 리스너
 
     if (locationState) {
+      // "preoffer" 받음
       setCallState("before");
-      // "offer" 받음
       console.log("locationState: ", locationState);
-      pc.setRemoteDescription(locationState.data.sdp);
+      socket.on("offer", (data: SignalData) => {
+        pc.setRemoteDescription(data.sdp);
+      })
     } else {
-      // '전화걸기'를 눌러 들어온 Caller는 바로 전화 발신
-      Call();
+      // '전화걸기'를 눌러 들어온 Caller는 0.5초 후 전화 발신
+      setTimeout(Call, 500);
     }
 
     // answer 받음
