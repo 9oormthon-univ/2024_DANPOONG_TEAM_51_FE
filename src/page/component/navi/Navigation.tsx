@@ -67,7 +67,7 @@ const St = {
     width: 393px;
     height: 108px;
     border-bottom: 1px solid ${({ theme }) => theme.colors.gray300};
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #fffefc;
     margin: 0 auto;
     position: fixed;
   `,

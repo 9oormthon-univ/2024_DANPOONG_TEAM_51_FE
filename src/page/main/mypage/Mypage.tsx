@@ -3,9 +3,7 @@ import styled from 'styled-components';
 const Mypage = () => {
   return (
     <>
-      <St.HomeWrapper>
-        <div>Mypage</div>
-      </St.HomeWrapper>
+      <St.HomeWrapper></St.HomeWrapper>
     </>
   );
 };
@@ -16,8 +14,7 @@ const St = {
 
     width: 100%;
     height: 100%;
-    background-color: #444444;
   `,
-}
+};
 
 export default Mypage;

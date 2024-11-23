@@ -9,6 +9,7 @@ import ChattingMessageInput from './component/ChattingMessageInput';
 import CallDescription from '@image/chatting/CallDescription.svg?react';
 import CallButton from '@image/chatting/call-button.svg?react';
 import { getUserInfo } from '@/shared/api/user';
+import { useParams } from 'react-router-dom';
 
 interface MessageData {
   text: string;
@@ -24,6 +25,7 @@ const ChattingPage = () => {
   const [showCallButton, setShowCallButton] = useState(true);
   const navigate = useNavigate();
   let userId = 0;
+  const { roomId } = useParams<{ roomId: string }>();
 
   const handleUserInfo = async () => {
     try {
@@ -44,7 +46,7 @@ const ChattingPage = () => {
   // Socket 연결
   useEffect(() => {
     const socket = io(signalUri, {
-      query: { roomId: 3 },
+      query: { roomId: roomId },
       withCredentials: true,
     });
     socketRef.current = socket;
@@ -60,16 +62,17 @@ const ChattingPage = () => {
         date: new Date().toLocaleDateString(),
       };
 
-      
       setMessages((prevMessages) => [...prevMessages, formattedMessage]);
     });
     socket.on('pre_offer', () => {
-      console.log("got pre_offer");
-      navigate("/voice-call", {state: { 
-        preoffer: true,
-      } });
-    })
-    
+      console.log('got pre_offer');
+      navigate('/voice-call', {
+        state: {
+          preoffer: true,
+        },
+      });
+    });
+
     return () => {
       socket.disconnect();
     };
@@ -77,12 +80,12 @@ const ChattingPage = () => {
 
   // 메시지 전송
   const handleSendMessage = (text: string) => {
-    const newMessage: MessageData = {
-      text,
-      sender: 'user',
-      time: new Date().toLocaleTimeString(),
-      date: new Date().toLocaleDateString(),
-    };
+    // const newMessage: MessageData = {
+    //   text,
+    //   sender: 'user',
+    //   time: new Date().toLocaleTimeString(),
+    //   date: new Date().toLocaleDateString(),
+    // };
 
     // 서버로 메시지 전송
     socketRef.current?.emit('message', {
@@ -93,9 +96,9 @@ const ChattingPage = () => {
 
   const handleCall = ({}) => {
     console.log('handleCall');
-    if(!socketRef.current) return;
-    socketRef.current.emit("pre_offer", {});
-    navigate("/voice-call", { state: {} });
+    if (!socketRef.current) return;
+    socketRef.current.emit('pre_offer', {});
+    navigate('/voice-call', { state: {} });
   };
 
   // 전화 버튼 표시 조건 업데이트
