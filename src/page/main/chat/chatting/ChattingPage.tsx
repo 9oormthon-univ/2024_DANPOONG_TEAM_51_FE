@@ -70,8 +70,7 @@ const ChattingPage = () => {
     socket.on('pre_offer', () => {
       console.log("got pre_offer");
       navigate("/voice-call", {state: { 
-        preoffer: true, 
-        // socket: socketRef.current,
+        preoffer: true,
       } });
     })
     
@@ -102,9 +101,7 @@ const ChattingPage = () => {
     console.log('handleCall');
     if(!socketRef.current) return;
     socketRef.current.emit("pre_offer", {});
-    navigate("/voice-call", { state: { 
-      // socket: socketRef.current,
-    } });
+    navigate("/voice-call", { state: {} });
   };
 
   // 전화 버튼 표시 조건 업데이트

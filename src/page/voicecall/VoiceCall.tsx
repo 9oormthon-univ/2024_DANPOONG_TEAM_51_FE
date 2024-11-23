@@ -19,7 +19,6 @@ interface SignalData {
 
 interface LocationStateData {
   preoffer?: boolean;
-  // socket: Socket;
 }
 
 const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
@@ -52,7 +51,6 @@ const VoiceCall = () => {
 
     console.log(socketRef.current);
     socketRef.current = socket;
-    // socketRef.current = locationState.socket;
 
     // ICE 설정
     const iceConfig = {
