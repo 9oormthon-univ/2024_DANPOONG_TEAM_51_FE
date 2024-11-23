@@ -67,8 +67,8 @@ const ChattingPage = () => {
       
       setMessages((prevMessages) => [...prevMessages, formattedMessage]);
     });
-    socket.on('preoffer', () => {
-      console.log("got preoffer");
+    socket.on('pre_offer', () => {
+      console.log("got pre_offer");
       navigate("/voice-call", {state: "preoffer"});
     })
     
@@ -97,7 +97,7 @@ const ChattingPage = () => {
 
   const handleCall = () => {
     console.log('handleCall');
-    socketRef.current?.emit("preoffer");
+    socketRef.current?.emit("pre_offer");
     navigate("/voice-call");
   };
 

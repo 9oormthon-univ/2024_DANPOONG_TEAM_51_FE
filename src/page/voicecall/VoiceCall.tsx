@@ -71,7 +71,7 @@ const VoiceCall = () => {
     // 소켓 리스너
 
     if (locationState) {
-      // "preoffer" 받음
+      // "pre_offer" 받음
       setCallState("before");
       console.log("locationState: ", locationState);
       socket.on("offer", (data: SignalData) => {
