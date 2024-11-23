@@ -43,14 +43,12 @@ const ChattingPage = () => {
 
     // 메시지 수신 처리
     socket.on('message', (data) => {
-      console.log('daaaa', data);
       const isUserMessage = data.senderId === userId;
-      console.log('asdfadfadfadsfadsf', data.senderId, isUserMessage);
-      console.log(data);
+      const nowTime = new Date();
       const formattedMessage: MessageData = {
         text: data.content,
         sender: isUserMessage ? 'user' : 'other',
-        time: new Date().toLocaleTimeString(),
+        time: formatTime(nowTime),
         date: new Date().toLocaleDateString(),
       };
 
@@ -97,6 +95,21 @@ const ChattingPage = () => {
 
     return () => clearInterval(intervalId);
   }, [mentoringStartTime]);
+
+  function formatTime(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true, // 12시간 형식 (오전/오후)
+    };
+
+    const timeString = date.toLocaleTimeString('ko-KR', options);
+
+    // '오전 10:00' 형식으로 반환
+    return timeString.replace(/AM|PM/, (match) =>
+      match === 'AM' ? '오전' : '오후'
+    );
+  }
 
   return (
     <St.ChattingPageWrapper>
