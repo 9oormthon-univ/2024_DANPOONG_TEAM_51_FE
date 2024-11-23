@@ -38,6 +38,8 @@ const VoiceCall = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeakerphoneOn, setIsSpeakerphoneOn] = useState(false)
   const [isMicOn, setIsMicOn] = useState(true)
+  const timecountRef = useRef<NodeJS.Timeout>();
+  const [secondPassed, setSecondPassed] = useState(0)
 
 
   useEffect(() => {
@@ -86,6 +88,7 @@ const VoiceCall = () => {
       }
       pc.setRemoteDescription(data.sdp);
       setIsConnected(true);
+      timecountRef.current = timeCountStart();
       recorderRef.current?.startRecording();
       console.log("Caller: record Started");
     });
@@ -147,6 +150,7 @@ const VoiceCall = () => {
 
     return () => {
       pc.close();
+      clearInterval(timecountRef.current);
     }
   }, [])
 
@@ -191,6 +195,7 @@ const VoiceCall = () => {
       pcRef.current.setLocalDescription(sdp);
       socketRef.current.emit("answer", { sdp });
       setIsConnected(true);
+      timecountRef.current = timeCountStart();
       recorderRef.current?.startRecording();
       console.log("Callee: record Started");
     } catch (e) {
@@ -208,6 +213,8 @@ const VoiceCall = () => {
     if (!pcRef.current) return;
     pcRef.current.close();
     setIsConnected(false);
+    clearInterval(timecountRef.current);
+    console.log("timer cleared");
     if(!recorderRef.current) return;
     console.log("download record...");
     recorderRef.current.stopRecording(() => {
@@ -216,9 +223,38 @@ const VoiceCall = () => {
     });
   }
 
+  const timeCountStart = () => {
+    const begin = Date.now();
+    console.log("timer started");
+    return setInterval(() => {
+      const seconds = Math.floor((Date.now() - begin) / 1000);
+      setSecondPassed(seconds);
+    }, 1000);
+  }
+
   /* BtnGroup 핸들러 */
   const handleSpeakerphoneToggle = () => {
     console.log("toggle speakerphone"); 
+    navigator.mediaDevices.enumerateDevices().then((devices)=>{
+      const audioDevices = devices.filter(device => device.kind == "audioinput");
+      console.log(audioDevices);
+      // streamRef.current?.getAudioTracks().forEach((track) => {
+      //   track.stop();
+      // });
+      // const constraints: MediaStreamConstraints = {
+      //   video: false,
+      //   audio: {deviceId: audioDevices[isSpeakerphoneOn? 0 : 1].deviceId}
+      // }
+      // navigator.mediaDevices.getUserMedia(constraints).then((stream)=>{
+      //   streamRef.current = stream;
+      //   const audioTracks = stream.getAudioTracks();
+      //   console.log("Got stream with audio device: " + audioTracks[0].label);
+      //   if (audioRef.current) {
+      //     audioRef.current.srcObject = stream;
+      //   }
+      //   audioTracks.forEach((track) => pcRef.current?.addTrack(track, stream));
+      // });
+    })
     setIsSpeakerphoneOn(!isSpeakerphoneOn);
   }
   const handleMicToggle = () => {
@@ -251,13 +287,13 @@ const VoiceCall = () => {
         {callState==="before" && <BeforeCall/>}
         {callState==="going" && <St.Info>
             { isConnected ? 
-              <TimeCounter secondsPassed={222} /> : "연결중"
+              <TimeCounter secondsPassed={secondPassed} /> : "연결중"
             }
           { !isConnected && <Loader/> }
         </St.Info>}
         {callState==="after" && <>
           <St.Heading>멘토링이 종료되었어요</St.Heading>
-          <St.Info><TimeCounter secondsPassed={601}/></St.Info>
+          <St.Info><TimeCounter secondsPassed={secondPassed}/></St.Info>
           </>}
         {callState==="failure" && <St.Heading>
           전화 연결에 실패하였어요
