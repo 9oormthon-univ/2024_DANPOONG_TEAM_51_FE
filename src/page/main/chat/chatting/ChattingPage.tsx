@@ -8,7 +8,6 @@ import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import CallDescription from '@image/chatting/CallDescription.svg?react';
 import CallButton from '@image/chatting/call-button.svg?react';
-import { getChattingMessage } from '@/shared/api/chatting';
 import { getUserInfo } from '@/shared/api/user';
 
 interface MessageData {
@@ -30,18 +29,17 @@ const ChattingPage = () => {
     try {
       const response = await getUserInfo();
       userId = response.data.id;
-      console.log('userId', response);
-      console.log('제발', userId);
     } catch (error) {
       console.log(error);
     }
   };
 
-  handleUserInfo();
-  const socketRef = useRef<Socket | null>(null);
+  const iRunOnlyOnce = () => {
+    handleUserInfo();
+  };
+  useEffect(iRunOnlyOnce, []);
 
-  // const previousMessages = getChattingMessage({ id: '2' });
-  // console.log(previousMessages);
+  const socketRef = useRef<Socket | null>(null);
 
   // Socket 연결
   useEffect(() => {
@@ -53,14 +51,12 @@ const ChattingPage = () => {
 
     // 메시지 수신 처리
     socket.on('message', (data) => {
-      console.log('daaaa', data);
       const isUserMessage = data.senderId === userId;
-      console.log('asdfadfadfadsfadsf', data.senderId, isUserMessage);
-      console.log(data);
+      const nowTime = new Date();
       const formattedMessage: MessageData = {
         text: data.content,
         sender: isUserMessage ? 'user' : 'other',
-        time: new Date().toLocaleTimeString(),
+        time: formatTime(nowTime),
         date: new Date().toLocaleDateString(),
       };
 
@@ -87,8 +83,6 @@ const ChattingPage = () => {
       time: new Date().toLocaleTimeString(),
       date: new Date().toLocaleDateString(),
     };
-
-    // setMessages((prevMessages) => [...prevMessages, newMessage]);
 
     // 서버로 메시지 전송
     socketRef.current?.emit('message', {
@@ -123,6 +117,21 @@ const ChattingPage = () => {
 
     return () => clearInterval(intervalId);
   }, [mentoringStartTime]);
+
+  function formatTime(date: Date): string {
+    const options: Intl.DateTimeFormatOptions = {
+      hour: 'numeric',
+      minute: 'numeric',
+      hour12: true, // 12시간 형식 (오전/오후)
+    };
+
+    const timeString = date.toLocaleTimeString('ko-KR', options);
+
+    // '오전 10:00' 형식으로 반환
+    return timeString.replace(/AM|PM/, (match) =>
+      match === 'AM' ? '오전' : '오후'
+    );
+  }
 
   return (
     <St.ChattingPageWrapper>
@@ -183,6 +192,9 @@ const St = {
     position: fixed;
     display: flex;
     margin: 122px 20px 0px 20px;
+  `,
+  CallButton: styled.button`
+    cursor: pointer;
   `,
 };
 

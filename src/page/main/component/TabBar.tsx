@@ -38,7 +38,7 @@ const Tab = ({
 
 const TabBar = () => {
   const navigate = useNavigate();
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(1);
 
   const tabs = [
     {

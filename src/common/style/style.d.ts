@@ -37,7 +37,7 @@ declare module 'styled-components' {
     gradients: {
       pinktoyellow: string;
       yellowtopink: string;
-    }
+    };
 
     fonts: {
       display_large: SerializedStyles;
@@ -49,7 +49,10 @@ declare module 'styled-components' {
       body_large: SerializedStyles;
       body_medium: SerializedStyles;
       body_small: SerializedStyles;
-      chatting_medium: SerializedStyles;
+      chat_medium: SerializedStyles;
+      label_small: SerializedStyles;
+      title_extrasmall: SerializedStyles;
+      caption: SerializedStyles;
     };
   }
 }
