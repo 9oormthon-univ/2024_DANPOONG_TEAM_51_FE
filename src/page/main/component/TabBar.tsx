@@ -93,7 +93,7 @@ const St = {
     border: none;
     color: ${({ theme }) => theme.colors.gray400};
     ${({ theme }) => theme.fonts.body_medium};
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #f5f1f0;
   `,
 
   TabIcon: styled.div`
