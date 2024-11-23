@@ -52,6 +52,7 @@ declare module 'styled-components' {
       chat_medium: SerializedStyles;
       label_small: SerializedStyles;
       title_extrasmall: SerializedStyles;
+      caption: SerializedStyles;
     };
   }
 }

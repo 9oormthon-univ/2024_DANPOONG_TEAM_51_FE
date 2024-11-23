@@ -109,6 +109,12 @@ const fonts = {
     font-weight: 700;
     line-height: 14px;
   `,
+  caption: css`
+    font-family: 'Pretendard';
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 20px;
+  `,
 };
 
 const theme: DefaultTheme = { colors, gradients, fonts };

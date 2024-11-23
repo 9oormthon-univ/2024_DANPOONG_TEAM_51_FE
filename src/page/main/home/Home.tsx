@@ -40,11 +40,13 @@ const St = {
   `,
 
   BannerWrapper: styled.div`
-    width: 100%;
     display: flex;
     width: 393px;
     height: 128px;
     margin-top: 108px;
+    img {
+      width: 100%;
+    }
   `,
 
   ProfileText: styled.div`
@@ -71,11 +73,14 @@ const St = {
     height: 88;
     margin: 16px 20px 0px 20px;
     justify-content: center;
+    img {
+      width: 100%;
+    }
   `,
 
   MentoringProcessDescription: styled.div`
     display: flex;
-    ${({ theme }) => theme.fonts.title_medium};
+    ${({ theme }) => theme.fonts.caption};
     color: ${({ theme }) => theme.colors.gray500};
     margin: 16px 20px;
   `,
