@@ -3,6 +3,26 @@ import styled from 'styled-components';
 import Navigation from '@/page/component/navi/Navigation';
 import bannerImg from '@image/home/banner_mentor.png';
 import mentoringProcessImg from '@image/home/mentoring-explain.png';
+import UserProfile from '@/page/main/home/component/UserProfile';
+
+const mentors = [
+  {
+    name: '권정',
+    keyword: '채팅만듬',
+  },
+  {
+    name: '김성은',
+    keyword: '채팅만듬',
+  },
+  {
+    name: '김성은',
+    keyword: '채팅만듬',
+  },
+  {
+    name: '김성은',
+    keyword: '채팅만듬',
+  },
+];
 
 const Home = () => {
   return (
@@ -15,7 +35,11 @@ const Home = () => {
         <St.ProfileText>
           {'멘토링 신청을 할 수 있는 멘토들이에요'}
         </St.ProfileText>
-        <St.ProfileListWrapper></St.ProfileListWrapper>
+        <St.ProfileListWrapper>
+          {mentors.map((data) => (
+            <UserProfile name={data.name} keyword={data.keyword} />
+          ))}
+        </St.ProfileListWrapper>
         <St.MentoringProcessText>
           {'멘토링은 어떻게 진행되나요?'}
         </St.MentoringProcessText>
@@ -62,6 +86,13 @@ const St = {
 
   ProfileListWrapper: styled.div`
     display: flex;
+    margin: 0px 12px;
+    overflow: scroll;
+    overflow-x: auto; /* 가로 스크롤 활성화 */
+    overflow-y: hidden; /* 세로 스크롤 제거 */
+    white-space: nowrap; /* 줄바꿈 방지 */
+    justify-content: center;
+    align-items: center;
   `,
 
   MentoringProcessText: styled.div`
