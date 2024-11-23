@@ -14,6 +14,7 @@ import VoiceCall from './page/voicecall/VoiceCall';
 import ComponentsTest from './page/component/ComponetsTest';
 import KakaoCallback from '@/page/index/KakaoCallback';
 import Book from './page/main/chat/book/Book';
+import ProfilePage from './page/main/profilepage/ProfilePage';
 
 const Router = () => {
   return (
@@ -29,6 +30,7 @@ const Router = () => {
             <Route path='/chat/room/:roomId' element={<ChattingPage />} />
             <Route path='chatting/book' element={<Book />} />
             <Route path='voice-call' element={<VoiceCall />} />
+            <Route path='profile' element={<ProfilePage />} />
 
             <Route path='components-test' element={<ComponentsTest />} />
             <Route path='/oauth' element={<KakaoCallback />} />
