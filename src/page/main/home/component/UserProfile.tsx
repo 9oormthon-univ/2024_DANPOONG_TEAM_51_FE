@@ -35,9 +35,9 @@ const St = {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    width: 128px;
+    min-width: 128px;
     height: 160px;
-    margin: 0px 8px;
+    margin: 0px 4px;
   `,
 
   CheckIcon: styled.div`

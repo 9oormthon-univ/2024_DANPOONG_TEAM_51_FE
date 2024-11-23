@@ -87,12 +87,9 @@ const St = {
   ProfileListWrapper: styled.div`
     display: flex;
     margin: 0px 12px;
-    overflow: scroll;
     overflow-x: auto; /* 가로 스크롤 활성화 */
     overflow-y: hidden; /* 세로 스크롤 제거 */
     white-space: nowrap; /* 줄바꿈 방지 */
-    justify-content: center;
-    align-items: center;
   `,
 
   MentoringProcessText: styled.div`
