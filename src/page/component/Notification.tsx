@@ -43,6 +43,7 @@ const St = {
     path { /* Left Icon Color */
                 stroke: ${({theme}) => theme.colors.gray500};
             }
+    word-break: keep-all;
     /* variant별 색상 */
     ${(props) => {
       switch (props.$variant) {

@@ -1,5 +1,6 @@
 import Button from "@/page/component/button/Button";
 import Navigation from "@/page/component/navi/Navigation";
+import Notification from "@/page/component/Notification";
 import moment from "moment";
 import { useState } from "react";
 import Calendar from "react-calendar";
@@ -44,6 +45,7 @@ const Book = () => {
 
   const handleBook = () => {
     console.log("handleBook: set mentoring datetime to ", moment(dateTime).format("YYMMDD-hh:mm"));
+    // TODO: 서버로 예약시간 전송
     setIsSubmitted(true);
   }
 
@@ -87,7 +89,7 @@ const Book = () => {
               onChange={handleTimeChange}
               />
             </St.CalendarWrapper>
-            <p>{dateTime?.toString()}</p>
+            <Notification variant="info">예약한 시간 10분 전부터 전화가 가능해요!</Notification>
           </St.BookWrapper>
           <Button onClick={handleBook}>멘토링 시간 예약하기</Button>
         </St.ContentWrapper>
@@ -137,7 +139,7 @@ const St = {
     }
   `,
   CalendarWrapper: styled.div`
-    margin: 1.6rem 0 0.8rem 0;
+    margin: 1.6rem 0 2.4rem 0;
     text-align: right;
     .react-calendar {
       border-radius: 1rem;
