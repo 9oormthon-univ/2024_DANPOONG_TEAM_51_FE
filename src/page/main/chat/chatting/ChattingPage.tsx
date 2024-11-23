@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -7,6 +7,8 @@ import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import CallDescription from '@image/chatting/CallDescription.svg?react';
 import CallButton from '@image/chatting/call-button.svg?react';
+import { io, Socket } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 interface MessageData {
   text: string;
@@ -15,11 +17,34 @@ interface MessageData {
   date: string;
 }
 
+const signalUri = import.meta.env.VITE_SOCKET_BASE_URL;
+
 const ChattingPage = () => {
   const [messages, setMessages] = React.useState<MessageData[]>([]);
   const [showCallButton, setShowCallButton] = useState(true);
 
-  const mentoringStartTime = '2024-11-23T17:41:00'; // 임시 시간 데이터
+  const mentoringStartTime = '2024-11-23T20:41:00'; // 임시 시간 데이터
+  const socketRef = useRef<Socket>(); // socket 연결
+  const navigate = useNavigate();
+  
+
+  useEffect(() => {
+    // WebSocket 연결
+    const socket = io(signalUri, {
+      query: {roomId: 1 },
+      withCredentials: true,
+    })
+
+    console.log(socketRef.current);
+    socketRef.current = socket;
+    console.log("socket: ", socketRef.current);
+
+    socket.on("preoffer", () => {
+      console.log("got preoffer");
+      navigate("/voice-call", {state: "preoffer"})
+    });
+  }, [])
+  
 
   useEffect(() => {
     const updateCallButtonVisibility = () => {
@@ -43,6 +68,8 @@ const ChattingPage = () => {
 
   const handleCall = () => {
     console.log('handleCall');
+    socketRef.current?.emit("preoffer");
+    navigate("/voice-call");
   };
 
   const handleSendMessage = (text: string) => {
