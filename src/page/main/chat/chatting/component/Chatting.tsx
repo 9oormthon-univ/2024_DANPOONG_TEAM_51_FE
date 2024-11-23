@@ -95,7 +95,7 @@ const DateLabel = styled.div`
   border-radius: 12px;
   border: 1px solid ${({ theme }) => theme.colors.gray200};
   padding: 4px 8px;
-  ${({ theme }) => theme.fonts.title_extralarge};
+  ${({ theme }) => theme.fonts.title_extrasmall};
   max-width: fit-content;
 `;
 

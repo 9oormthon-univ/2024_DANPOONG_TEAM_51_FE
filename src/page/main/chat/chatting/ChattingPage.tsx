@@ -77,7 +77,7 @@ const ChattingPage = () => {
   };
 
   // 전화 버튼 표시 조건 업데이트
-  const mentoringStartTime = '2024-11-23T17:41:00'; // 임시 시간 데이터
+  const mentoringStartTime = '2024-11-24T02:35:00'; // 임시 시간 데이터
   useEffect(() => {
     const updateCallButtonVisibility = () => {
       const currentTime = new Date();
@@ -170,6 +170,9 @@ const St = {
     position: fixed;
     display: flex;
     margin: 122px 20px 0px 20px;
+  `,
+  CallButton: styled.button`
+    cursor: pointer;
   `,
 };
 
