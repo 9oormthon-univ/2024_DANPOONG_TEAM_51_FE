@@ -7,7 +7,6 @@ import Chatting from './component/Chatting';
 import ChattingMessageInput from './component/ChattingMessageInput';
 import CallDescription from '@image/chatting/CallDescription.svg?react';
 import CallButton from '@image/chatting/call-button.svg?react';
-import { getChattingMessage } from '@/shared/api/chatting';
 import { getUserInfo } from '@/shared/api/user';
 
 interface MessageData {
@@ -26,8 +25,6 @@ const ChattingPage = () => {
     try {
       const response = await getUserInfo();
       userId = response.data.id;
-      console.log('userId', response);
-      console.log('제발', userId);
     } catch (error) {
       console.log(error);
     }
@@ -35,9 +32,6 @@ const ChattingPage = () => {
 
   handleUserInfo();
   const socketRef = useRef<Socket | null>(null);
-
-  // const previousMessages = getChattingMessage({ id: '2' });
-  // console.log(previousMessages);
 
   // Socket 연결
   useEffect(() => {
@@ -76,8 +70,6 @@ const ChattingPage = () => {
       time: new Date().toLocaleTimeString(),
       date: new Date().toLocaleDateString(),
     };
-
-    // setMessages((prevMessages) => [...prevMessages, newMessage]);
 
     // 서버로 메시지 전송
     socketRef.current?.emit('message', {
